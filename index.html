@@ -613,24 +613,28 @@ const STAGE_ORDER = [
 ];
 
 const STAGE_LABEL = {
-  prospect:'Prospect', first_touch:'First Touch', connected:'Connected',
-  discovery_scheduled:'Discovery Scheduled', discovery_done:'Discovery Done',
-  qualified:'Qualified', proposal_building:'Building Proposal', proposal_ready:'Proposal Ready',
-  proposal_presented:'Proposal Presented', objection_handling:'Objection Handling',
-  negotiation:'Negotiation', verbal_yes:'Verbal Yes ⚠️ NOT CLOSED',
-  docs_requested:'Docs Outstanding ⚠️', docs_received:'Docs Received',
-  underwriting:'Underwriting', approved:'Approved ✓',
-  funded:'FUNDED — CLOSED WON 🎉', closed_won:'Closed Won',
-  closed_lost:'Closed Lost', dormant:'Dormant'
-,
+  prospect:'Prospect',
+  first_touch:'First Touch',
+  connected:'Connected',
+  discovery_scheduled:'Discovery Scheduled',
+  discovery_done:'Discovery Done',
+  qualified:'Qualified',
+  proposal_building:'Building Proposal',
+  proposal_ready:'Proposal Ready',
+  proposal_presented:'Proposal Presented',
+  objection_handling:'Objection Handling',
+  negotiation:'Negotiation',
   verbal_yes:'Verbal Yes ⚠️ NOT CLOSED',
   docs_requested:'Docs Outstanding ⚠️',
   docs_received:'Docs Received',
   underwriting:'Underwriting',
   approved:'Approved ✓',
-  funded:'FUNDED — CLOSED WON',
-  proposal_building:'Building Proposal',
-  proposal_ready:'Proposal Ready'
+  funded:'FUNDED — CLOSED WON 🎉',
+  closed_won:'Closed Won',
+  closed_lost:'Closed Lost',
+  dormant:'Dormant',
+  stalled:'Stalled',
+  cpa_review:'CPA Review',
 };
 
 const STAGE_COL = {
@@ -810,10 +814,20 @@ function useAP(cost){
   G.ap-=cost; G.today.push(cost); updateAPBar(); return true;
 }
 function updateAPBar(){
-  const el=document.getElementById('ap-bar');
-  const vEl=document.getElementById('ap-val');
-  if(el) el.style.width=Math.round((G.ap/G.apMax)*100)+'%';
-  if(vEl) vEl.textContent=G.ap+'/'+G.apMax+' AP';
+  // Single source of truth — always sync all four AP display elements
+  const pct   = Math.round((G.ap / Math.max(1, G.apMax)) * 100) + '%';
+  const label = G.ap + '/' + G.apMax + ' AP';
+  const color = G.ap <= 0 ? '#d93025' : G.ap <= 3 ? '#b45309' : '#0a66c2';
+  // Main bar (daily actions panel)
+  const bar1 = document.getElementById('ap-bar');
+  const val1 = document.getElementById('ap-val');
+  if(bar1) bar1.style.width = pct;
+  if(val1){ val1.textContent = label; val1.style.color = color; }
+  // Sticky bar (engage panel)
+  const bar2 = document.getElementById('engage-ap-bar');
+  const val2 = document.getElementById('engage-ap-val');
+  if(bar2) bar2.style.width = pct;
+  if(val2){ val2.textContent = label; val2.style.color = color; }
 }
 
 // ─── UPDATE UI ───────────────────────────────────────────────
