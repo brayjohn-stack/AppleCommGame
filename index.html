@@ -894,7 +894,7 @@ function addComm(gp){
   const c = gp * G.commRate;
   // Before/on 5th of month: commission locks to current paycheck period
   // After 5th: goes to pending for next period
-  const dom = calDayOfMonth(G.day);
+  const dom = domOf(G.day);
   if(dom <= 5){ G.lockedComm += c; }
   else { G.pendingComm += c; }
   G.commissionEarned += c;
@@ -903,7 +903,7 @@ function addComm(gp){
 
 // RESTORED: checkCutoff — runs at end of each day
 function checkCutoff(){
-  const dom = calDayOfMonth(G.day);
+  const dom = domOf(G.day);
   if(dom === 5 && G.pendingComm > 0){
     G.lockedComm += G.pendingComm;
     addFeed('📋 Commission cutoff ' + dateShort(cdToDate(G.day)) + ' — ' + fmt(G.pendingComm) + ' locked for ' + dateShort(cdToDate(G.nextPaydayCd||G.nextPayday)));
@@ -1029,7 +1029,7 @@ function updateUI(){
   if(wp)wp.style.display=G.isWeekend?'block':'none';
   if(wd)wd.style.display=G.isWeekend?'none':'block';
   const wdn=document.getElementById('wknd-day-name');
-  if(wdn)wdn.textContent=dow;
+  if(wdn)wdn.textContent=_dowName;
 
   // Burnout alert
   const ba=document.getElementById('burnout-alert');
