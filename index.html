@@ -134,10 +134,10 @@ button:active{transform:scale(.98)}
   <span class="tb-logo">▲ LEASING SIM: AUSTIN</span>
   <div class="sep"></div>
   <div class="tbs"><span class="tbl">Checking</span><span class="tbv" id="tb-cash" style="color:#1a7f4b">$0</span></div>
-  <div class="tbs"><span class="tbl">Next Pay</span><span class="tbv" id="tb-nextpay" style="color:#b45309">Day 15</span></div>
+  <div class="tbs"><span class="tbl">Next Pay</span><span class="tbv" id="tb-nextpay" style="font-size:11px" style="color:#b45309">Day 15</span></div>
   <div class="sep"></div>
-  <div class="tbs"><span class="tbl">Day</span><span class="tbv cb" id="tb-day">1</span></div>
-  <div class="tbs"><span class="tbl">Month</span><span class="tbv" id="tb-mo">Jan</span></div>
+  <div class="tbs"><span class="tbl">Today</span><span class="tbv cb" id="tb-day" style="font-size:11px">Jun 2</span></div>
+  <div class="tbs"><span class="tbl">Career Day</span><span class="tbv" id="tb-mo">1</span></div>
   <div class="sep"></div>
   <div class="tbs"><span class="tbl">Gross Profit</span><span class="tbv cg" id="tb-gp">$0</span></div>
   <div class="tbs"><span class="tbl">Deals</span><span class="tbv ca" id="tb-deals">0</span></div>
@@ -597,7 +597,7 @@ const AP_COSTS = {
   build_proposal:2, present_proposal:2, cpa_call:2, doc_chase:1,
   create_content:2, study_product:2, networking:2, cpa_lunch:2,
   admin:0, text_followup:1, close_attempt:1, send_revised:2,
-  linkedin:1,
+  linkedin:1, mark_funded:0,
 };
 const AP_PER_DAY = 15;
 const AP_WEEKEND  = 5;
@@ -696,37 +696,131 @@ const ACTION_LABELS = {
   admin:'Log note / set reminder',
   close_attempt:'Ask for the business',
   send_revised:'Send revised proposal',
+  mark_funded:'Mark Deal Funded (CLOSED)',
 };
 
 // ─── GAME STATE ──────────────────────────────────────────────
+// ── REAL CALENDAR SYSTEM ─────────────────────────────────────
+// Game starts Monday, June 2, 2025
+const GAME_START_DATE = new Date(2025, 5, 2);
+const MONTH_DAYS = [31,28,31,30,31,30,31,31,30,31,30,31];
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function cdToDate(careerDay){
+  const d = new Date(GAME_START_DATE);
+  d.setDate(d.getDate() + careerDay - 1);
+  return d;
+}
+function dateFull(d){ return DAY_NAMES[d.getDay()]+', '+MONTH_NAMES[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+function dateShort(d){ return MONTH_SHORT[d.getMonth()]+' '+d.getDate(); }
+function dateShortY(d){ return MONTH_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+
+// Career day → calendar day-of-month
+function domOf(cd){ return cdToDate(cd).getDate(); }
+// Career day → month index (0-11)
+function moOf(cd){ return cdToDate(cd).getMonth(); }
+
+// Next payday career day (paydays are the 1st and 15th of each real month)
+function nextPaydayCd(fromCd){
+  const d = cdToDate(fromCd);
+  const dom = d.getDate(), mo = d.getMonth(), yr = d.getFullYear();
+  let target;
+  if(dom < 15){ target = new Date(yr, mo, 15); }
+  else { target = new Date(mo === 11 ? yr+1 : yr, mo === 11 ? 0 : mo+1, 1); }
+  return Math.round((target - GAME_START_DATE)/(864e5)) + 1;
+}
+
+// Commission cutoff: the 5th of each month
+// Deals funded before the 5th → paid on the 1st of next month
+// Deals funded 5th-end → paid on the 15th of same month
+function nextCutoffCd(fromCd){
+  const d = cdToDate(fromCd);
+  const dom = d.getDate(), mo = d.getMonth(), yr = d.getFullYear();
+  let target;
+  if(dom < 5){ target = new Date(yr, mo, 5); }
+  else { target = new Date(mo === 11 ? yr+1 : yr, mo === 11 ? 0 : mo+1, 5); }
+  return Math.round((target - GAME_START_DATE)/(864e5)) + 1;
+}
+
+// Which paycheck does a deal funded on fundedCd belong to?
+// Returns the career day of the paycheck it will appear on
+function payCheckCdForDeal(fundedCd){
+  const d   = cdToDate(fundedCd);
+  const dom = d.getDate(), mo = d.getMonth(), yr = d.getFullYear();
+  if(dom < 5){
+    // Funded before 5th → pays on 1st of this month (already passed) or next month 1st
+    // Actually: 1st check of this month covers prior period — 
+    // deals funded days 1-4 pay on 1st of NEXT month (next 1st check)
+    const nm = mo === 11 ? 0 : mo+1;
+    const ny = mo === 11 ? yr+1 : yr;
+    const target = new Date(ny, nm, 1);
+    return Math.round((target - GAME_START_DATE)/(864e5)) + 1;
+  } else {
+    // Funded 5th-end of month → pays on 15th of this month
+    const target = new Date(yr, mo, 15);
+    return Math.round((target - GAME_START_DATE)/(864e5)) + 1;
+  }
+}
+
+// Commission period label for a paycheck career day
+function commPeriodLabel(paydayCd){
+  const d   = cdToDate(paydayCd);
+  const dom = d.getDate(), mo = d.getMonth(), yr = d.getFullYear();
+  if(dom === 15){
+    // 15th check covers deals funded the 5th–14th of this month
+    return dateShort(new Date(yr,mo,5))+' – '+dateShort(new Date(yr,mo,14));
+  } else {
+    // 1st check covers deals funded prior month 15th through prior month end
+    const pm = mo === 0 ? 11 : mo-1;
+    const py = mo === 0 ? yr-1 : yr;
+    return dateShort(new Date(py,pm,15))+' – '+dateShort(new Date(py,pm,MONTH_DAYS[pm]));
+  }
+}
+
 let G = {
-  day:1, month:5,
-  isWeekend:false, weekendUsed:false,
+  day:1,           // career day (starts at 1 = June 2, 2025)
+  month:5,         // legacy; use moOf(G.day) for real month
+  isWeekend:false,
+  weekendUsed:false,
   ap:AP_PER_DAY, apMax:AP_PER_DAY,
 
   conf:28, ener:90, disc:75, mom:5, burnout:0,
 
-  gp:0, commissionEarned:0, deals:0, veh:0,
-  pendingComm:0, lockedComm:0, commRate:0.33,
-  nextPayday:15,
+  gp:0,                  // total funded GP
+  commissionEarned:0,    // total commission ever earned (paid + pending)
+  deals:0,               // funded/closed deals only
+  veh:0,                 // funded vehicles
+
+  // Commission tracking
+  fundedDeals:[],        // [{pid, name, veh, gp, comm, fundedCd, paycheckCd, paid}]
+  pendingComm:0,         // earned but not yet assigned to a paycheck period
+  lockedComm:0,          // locked for the upcoming paycheck
+  commRate:0.33,
+  nextPaydayCd:1,        // career day of next payday (set in startGame)
+  nextCutoffCd:1,        // career day of next commission cutoff
 
   draw:3500,
+  drawRepaid:0,
   expenses:{rent:1400,car:450,food:600,subs:150,other:300},
   banks:{
-    checking:{label:'Chase Checking',bal:0,type:'checking'},
-    savings:{label:'High-Yield Savings',bal:0,type:'savings'},
-    roth:{label:'Roth IRA',bal:0,type:'roth'},
-    emergency:{label:'Emergency Fund',bal:0,type:'emergency'},
+    checking:{label:'Chase Checking',bal:0},
+    savings:{label:'High-Yield Savings',bal:0},
+    roth:{label:'Roth IRA (Roth)',bal:0},
+    emergency:{label:'Emergency Fund',bal:0},
   },
   paychecks:[],
 
   pipe:[],
   rep:{aw:0,tr:0,pr:15,au:12,so:0,rf:0},
   today:[], monthly:[], mgp:0, mdeals:0,
-  productKnowledge:{trac:20,asc842:5,sec179:5,depreciation:8,tco:10,residual:10,mileage:15,earlyTerm:5,upfit:5,insurance:8,credit:10,cpaHandling:5,ownerObj:10,discovery:12,proposal:10,negotiation:8},
+  productKnowledge:{trac:20,asc842:5,sec179:5,depreciation:8,tco:10,
+    residual:10,mileage:15,earlyTerm:5,upfit:5,insurance:8,
+    credit:10,cpaHandling:5,ownerObj:10,discovery:12,proposal:10,negotiation:8},
 
-  // Active engage view
-  activeProspectId: null,
+  activeProspectId:null,
+  _cpaQ:null, _cpaP:null,
 };
 
 const DEAL_TEMPLATES = [
@@ -785,22 +879,51 @@ function startGame(){
 }
 
 // ─── PAYCHECK MATH ───────────────────────────────────────────
-function calcPC(hd,comm){
-  const g=hd+comm,f=g*0.22,ss=g*0.062,m=g*0.0145;
-  return{gross:g,fed:f,ss,mcare:m,net:g-f-ss-m};
+function calcPC(drawHalf, commAmount){
+  const gross = drawHalf + commAmount;
+  const fed   = gross * 0.22;
+  const ss    = gross * 0.062;
+  const mcare = gross * 0.0145;
+  return { gross, fed, ss, mcare, net: gross - fed - ss - mcare };
 }
-function totalExp(){return Object.values(G.expenses).reduce((s,v)=>s+v,0)}
-function addComm(gp){
-  const c=gp*G.commRate;
-  if(simDOM(G.day)<=5)G.lockedComm+=c;else G.pendingComm+=c;
-  G.commissionEarned+=c; return c;
+function totalExp(){ return Object.values(G.expenses).reduce((s,v)=>s+v,0); }
+
+// Call when a deal reaches FUNDED stage only
+function recordFundedDeal(p, gp){
+  const comm     = gp * G.commRate;
+  const paycheckCd = payCheckCdForDeal(G.day);
+  G.fundedDeals.push({
+    pid: p.id, name: p.name, veh: p.proposalData ? p.proposalData.vehicleCount : p.fleetSize,
+    gp, comm, fundedCd: G.day, paycheckCd, paid: false,
+  });
+  G.pendingComm += comm;
+  G.commissionEarned += comm;
+  G.gp  += gp;
+  G.deals++;
+  G.veh += (p.proposalData ? p.proposalData.vehicleCount : 1);
+  G.mgp  = (G.mgp || 0) + gp;
+  G.mdeals = (G.mdeals || 0) + 1;
+  addFeed('🎉 FUNDED: '+p.name+' — '+fmt(gp)+' GP · Commission: '+fmt(comm));
+  return comm;
 }
-function checkCutoff(){
-  if(simDOM(G.day)===5&&G.pendingComm>0){
-    G.lockedComm+=G.pendingComm;
-    addFeed('📋 Commission cutoff — '+fmt(G.pendingComm)+' locked for next payday');
-    G.pendingComm=0;
+
+// Lock commission that belongs to the upcoming paycheck
+function runCommissionCutoff(){
+  if(G.day < G.nextCutoffCd) return;
+  // Find all unpaid funded deals whose paycheckCd <= nextPaydayCd
+  let locked = 0;
+  G.fundedDeals.forEach(d=>{
+    if(!d.paid && d.paycheckCd <= G.nextPaydayCd){
+      G.lockedComm += d.comm;
+      G.pendingComm = Math.max(0, G.pendingComm - d.comm);
+      locked += d.comm;
+    }
+  });
+  if(locked > 0){
+    addFeed('📋 Commission cutoff '+dateShort(cdToDate(G.day))+' — '+fmt(locked)+' locked for '+dateShort(cdToDate(G.nextPaydayCd))+' paycheck');
   }
+  // Advance cutoff
+  G.nextCutoffCd = nextCutoffCd(G.day + 1);
 }
 
 // ─── AP SYSTEM ───────────────────────────────────────────────
@@ -835,14 +958,21 @@ function updateUI(){
   G.isWeekend=isWknd(G.day);
   G.apMax=G.isWeekend?AP_WEEKEND:AP_PER_DAY;
 
-  // Topbar
-  document.getElementById('tb-day').textContent=G.day;
-  document.getElementById('tb-mo').textContent=MONTHS[G.month];
+  // Topbar — real calendar dates
+  const _today = cdToDate(G.day);
+  const _todayStr = dateShort(_today);
+  const _careerDay = G.day;
+  const _nextPayDate = cdToDate(G.nextPaydayCd||nextPaydayCd(G.day));
+  const _nextCutDate = cdToDate(G.nextCutoffCd||nextCutoffCd(G.day));
+  const _dayEl = document.getElementById('tb-day');
+  if(_dayEl) _dayEl.textContent = _todayStr;
+  const _moEl = document.getElementById('tb-mo');
+  if(_moEl) _moEl.textContent = 'Day '+_careerDay;
   const cb=G.banks.checking.bal;
   const cashEl=document.getElementById('tb-cash');
   if(cashEl){cashEl.textContent=fmt(cb);cashEl.style.color=cb<500?'#d93025':cb<1500?'#b45309':'#1a7f4b';}
   const npEl=document.getElementById('tb-nextpay');
-  if(npEl)npEl.textContent='Day '+G.nextPayday;
+  if(npEl) npEl.textContent=dateShort(_nextPayDate);
   document.getElementById('tb-gp').textContent=fmt(G.gp);
   const activeCount=G.pipe.filter(p=>!['prospect','closed_won','closed_lost'].includes(p.stage)).length;
   document.getElementById('tb-pipe').textContent=activeCount;
@@ -860,12 +990,16 @@ function updateUI(){
   updateAPBar();
 
   // Day info
-  const dow=dayName(G.day),wk=Math.ceil(G.day/7);
+  const _d=cdToDate(G.day);
+  const _dowName=DAY_NAMES[_d.getDay()];
+  const _wk=Math.ceil(G.day/7);
   const dt=document.getElementById('day-title'),ds=document.getElementById('day-sub');
-  if(dt)dt.textContent=dow+' — Week '+wk+', '+MF[G.month];
-  if(ds)ds.textContent=G.isWeekend
-    ? dow+' — Weekend. '+G.ap+' AP remaining.'
-    : G.ap+' Action Points remaining today. ('+(G.apMax-G.ap)+' used)';
+  if(dt)dt.innerHTML='<b>'+dateFull(_d)+'</b>&nbsp; <span style="font-size:10px;color:#aeaeb2;font-weight:400">Career Day '+G.day+' &middot; Week '+_wk+'</span>';
+  const _cutStr=G.nextCutoffCd?dateShort(cdToDate(G.nextCutoffCd)):'—';
+  const _payStr=G.nextPaydayCd?dateShort(cdToDate(G.nextPaydayCd)):'—';
+  if(ds)ds.innerHTML=G.isWeekend
+    ? _dowName+' — Weekend &nbsp;&middot;&nbsp; '+G.ap+' AP &nbsp;&middot;&nbsp; Next pay: <b>'+_payStr+'</b> &nbsp;&middot;&nbsp; Cutoff: <b>'+_cutStr+'</b>'
+    : G.ap+' AP remaining &nbsp;&middot;&nbsp; Next pay: <b>'+_payStr+'</b> &nbsp;&middot;&nbsp; Commission cutoff: <b>'+_cutStr+'</b>';
 
   // Weekend/weekday panels
   const wp=document.getElementById('wknd-panel'),wd=document.getElementById('wkdy-panel');
@@ -2059,6 +2193,7 @@ function engageAction(prospectId,actionId){
     admin:()=>handleAdmin(p),
     close_attempt:()=>handleCloseAttempt(p),
     send_revised:()=>handleSendRevised(p),
+    mark_funded:()=>markFunded(p.id),
   };
   if(handlers[actionId])handlers[actionId]();
   else engageResult(p,'Action taken','Interaction logged.','','');
@@ -2445,7 +2580,41 @@ function handleDocChase(p){
   addFeed(p.name+': doc chase — '+p.docStage);
   showModal('Doc Chase — '+p.name,ub+'<div class="'+cfg.cls+'" style="margin-bottom:8px"><div class="rbt">Status: '+cfg.lbl+'</div>'+ev.m+'<div class="insight">'+cfg.act+'</div></div><div style="padding:8px 12px;background:#fff8e1;border:1px solid #fde68a;border-radius:7px;font-size:11px;line-height:1.8;margin-bottom:8px"><b>Outstanding:</b> Credit app · Business returns · YTD P&L · Entity docs · Insurance cert · Fleet list</div><div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button><button onclick="markDocReceived(\''+p.id+'\');closeModal()">Mark docs received</button><button onclick="markLost(\''+p.id+'\');closeModal()" style="color:#d93025;border-color:#d93025">Mark lost</button></div>');
 }
-function markDocReceived(id){const p=G.pipe.find(x=>x.id===id);if(!p)return;p.stage='docs_received';p.docStage='responsive';p.history.push({day:G.day,event:'Docs received'});addFeed(p.name+': docs received');updateUI();}
+function markDocReceived(id){
+  const p=G.pipe.find(x=>x.id===id);if(!p)return;
+  p.stage='docs_received';p.docStage='responsive';
+  p.history.push({day:G.day,event:'Docs received — moving to underwriting'});
+  addFeed(p.name+': docs received → underwriting');
+  updateUI();
+}
+
+function markFunded(id){
+  const p=G.pipe.find(x=>x.id===id);if(!p)return;
+  p.stage='funded';p.fundedCd=G.day;p.closedWon=true;
+  // Commission is earned NOW — deal is actually closed
+  const d=pick(DEAL_TEMPLATES);
+  const totalGP=p.proposalData?p.proposalData.totalMonthly*(p.proposalData.term||36)*0.03
+    :d.veh*(d.gp+rnd(-150,150));
+  const actualGP=Math.round(Math.max(800,totalGP));
+  const comm=recordFundedDeal(p,actualGP);
+  G.mom=clamp(G.mom+25);G.conf=clamp(G.conf+15);G.burnout=clamp(G.burnout-10);
+  p.history.push({day:G.day,event:'FUNDED — '+fmt(actualGP)+' GP. Commission: '+fmt(comm)});
+  addFeed('🏆 FUNDED/CLOSED: '+p.name+' — '+fmt(actualGP)+' GP — Commission: '+fmt(comm)+' → pays '+dateShort(cdToDate(payCheckCdForDeal(G.day))));
+  showModal('🏆 Deal Funded — '+p.name,
+    '<div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">'+
+    '<div style="font-size:11px;color:#1a7f4b;font-weight:600;letter-spacing:.08em;margin-bottom:6px">DEAL CLOSED & FUNDED</div>'+
+    '<div style="font-size:40px;font-weight:700;color:#1a7f4b">'+fmt(actualGP)+'</div>'+
+    '<div style="font-size:12px;color:#6e6e73">gross profit</div>'+
+    '<div style="font-size:14px;color:#b45309;font-weight:600;margin-top:4px">Your commission: '+fmt(comm)+'</div>'+
+    '<div style="font-size:11px;color:#6e6e73;margin-top:2px">Pays on: '+dateShort(cdToDate(payCheckCdForDeal(G.day)))+' paycheck</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:#6e6e73;background:#f5f5f7;border-radius:8px;padding:8px 12px">'+
+    'This deal is now CLOSED WON. Commission will appear on your '+dateShort(cdToDate(payCheckCdForDeal(G.day)))+' paycheck.'+
+    '</div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button></div>'
+  );
+  updateUI();
+}
 
 
 function markLost(id){
@@ -2489,20 +2658,25 @@ function handleCloseAttempt(p){
   if(roll<closeProb){
     p.stage='verbal_yes';p.closedDay=G.day;p.trust=5;p.closeAttempts=0;
     p.docStatus='credit app not yet sent';p.nextFollowUp=G.day+1;
-    const d=pick(DEAL_TEMPLATES);
-    const totalGP=d.veh*(d.gp+rnd(-150,150));
-    const comm=addComm(totalGP);
-    G.gp+=totalGP;G.deals++;G.veh+=d.veh;G.mom=clamp(G.mom+20);G.conf=clamp(G.conf+12);G.burnout=clamp(G.burnout-8);G.mgp+=totalGP;G.mdeals++;
-    p.history.push({day:G.day,event:'VERBAL YES — '+d.veh+' vehicles, '+fmt(totalGP)+' GP'});
-    addFeed('🤝 VERBAL YES: '+p.name+' — '+fmt(totalGP)+' GP — GET DOCS NOW');
+    p.docStage='requested';
+    // NOTE: Deal is NOT counted yet. Deals count only when FUNDED.
+    G.mom=clamp(G.mom+10);G.conf=clamp(G.conf+6);
+    p.history.push({day:G.day,event:'VERBAL YES — docs needed to fund'});
+    addFeed('🤝 VERBAL YES: '+p.name+' — ⚠️ NOT CLOSED — Get docs to fund');
     showModal('Verbal Yes — '+p.name,
-      '<div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:14px;margin-bottom:10px">'+
-      '<div style="font-size:10px;color:#6e6e73;margin-bottom:4px;font-weight:600">VERBAL YES ⚠️ NOT CLOSED — DOCS NEEDED</div>'+
-      '<div style="font-size:32px;font-weight:700;color:#1a7f4b">'+fmt(totalGP)+'</div>'+
-      '<div style="font-size:12px;color:#6e6e73">'+d.veh+' vehicles · '+d.term+'-month '+d.type+' · Commission: '+fmt(comm)+'</div></div>'+
-      '<div style="padding:10px;background:#fff8e1;border:1px solid #fde68a;border-radius:8px;font-size:11px;line-height:1.9;margin-bottom:8px">'+
-      '<b>Docs needed today:</b> Credit app · 2yr returns · YTD · Entity docs · Insurance cert · Fleet list</div>'+
-      '<div class="brow"><button class="btn-primary" onclick="closeModal()">Start doc collection</button></div>');
+      '<div style="background:#fff8e1;border:2px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:10px">'+
+      '<div style="font-size:12px;font-weight:700;color:#b45309;margin-bottom:6px">⚠️ VERBAL YES — THIS IS NOT A CLOSED DEAL</div>'+
+      '<div style="font-size:12px;color:#6e6e73;line-height:1.7">'+
+      'They said yes. The deal is not closed. Commission is not earned. '+
+      'The deal closes — and you get paid — only when it is FUNDED.<br><br>'+
+      '<b>Path to funded:</b> Verbal Yes → Docs Collected → Underwriting → Approval → Funded ✓</div></div>'+
+      '<div style="padding:10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:11px;line-height:1.9;margin-bottom:8px">'+
+      '<b>📋 Get ALL of these — today:</b><br>'+
+      '☐ Credit application &nbsp; ☐ 2 years business tax returns<br>'+
+      '☐ YTD P&L &nbsp; ☐ Entity documents &nbsp; ☐ Insurance certificate<br>'+
+      '☐ Fleet list with mileage &nbsp; ☐ Payoffs if applicable</div>'+
+      '<div style="font-size:11px;color:#6e6e73">Docs stall = deal dies. Follow up every 48 hours until everything is in.</div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">Start collecting docs</button></div>');
   } else {
     const outcomes=[
       {label:'Needs partner sign-off',note:'"Need to loop in my partner on anything big."',action:'Get all three on a 15-min call.',lock:rnd(3,7)},
@@ -2666,52 +2840,120 @@ function renderBankCards(){
   ).join('');
 }
 function renderPayPreview(){
-  const pc=calcPC(G.draw/2,G.lockedComm),he=totalExp()/2,left=pc.net-he;
-  const dtp=Math.max(0,G.nextPayday-G.day);
+  const comingDeals  = (G.fundedDeals||[]).filter(d=>!d.paid&&d.paycheckCd<=(G.nextPaydayCd||99));
+  const commComing   = comingDeals.reduce((s,d)=>s+d.comm,0);
+  const pc  = calcPC(G.draw/2, commComing);
+  const he  = totalExp()/2;
+  const left = Math.max(0, pc.net - he);
+  const payDate = G.nextPaydayCd ? dateShort(cdToDate(G.nextPaydayCd)) : '—';
+  const cutDate = G.nextCutoffCd ? dateShort(cdToDate(G.nextCutoffCd)) : '—';
+
   const row=(l,v,c)=>'<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #e5e5ea;font-size:11px"><span style="color:#6e6e73">'+l+'</span><span style="color:'+(c||'#1c1c1e')+'">'+v+'</span></div>';
   const pp=document.getElementById('pay-preview');
-  if(pp)pp.innerHTML='<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Next payday: <b>Day '+G.nextPayday+'</b> ('+dtp+' days)</div>'+
-    row('Base draw (half month)',fmt(G.draw/2))+row('Locked commission',fmt(G.lockedComm),'#1a7f4b')+
-    row('Federal (22%)','-'+fmt(pc.fed),'#d93025')+row('SS + Medicare','-'+fmt(pc.ss+pc.mcare),'#d93025')+
-    row('Texas state tax','$0','#1a7f4b')+row('Expenses (half)','-'+fmt(he),'#d93025')+
-    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px"><span>Leftover</span><span style="color:'+(left>=0?'#1a7f4b':'#d93025')+'">'+(left>=0?fmt(left):'-'+fmt(-left))+'</span></div>'+
-    '<div style="font-size:10px;color:#aeaeb2;margin-top:5px">Pending (closes 5th): <span style="color:#b45309">'+fmt(G.pendingComm)+'</span></div>';
+  if(pp)pp.innerHTML=
+    '<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Next payday: <b>'+payDate+'</b> (Career Day '+G.nextPaydayCd+')</div>'+
+    row('Draw (half month)',fmt(G.draw/2))+
+    row('Commission locked',fmt(commComing),'#1a7f4b')+
+    row('Federal (22%)','-'+fmt(pc.fed),'#d93025')+
+    row('SS + Medicare','-'+fmt(pc.ss+pc.mcare),'#d93025')+
+    row('Texas state tax','$0','#1a7f4b')+
+    row('Expenses (half)','-'+fmt(he),'#d93025')+
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px">'+
+    '<span>Est. leftover</span><span style="color:'+(left>0?'#1a7f4b':'#d93025')+'">'+fmt(left)+'</span></div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:5px">Pending (not yet locked): <span style="color:#b45309">'+fmt(G.pendingComm)+'</span> · Commission cutoff: <b>'+cutDate+'</b></div>';
+
   const ep=document.getElementById('exp-preview');
-  if(ep)ep.innerHTML='<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Monthly: <span style="color:#d93025">'+fmt(totalExp())+'</span></div>'+
+  if(ep)ep.innerHTML=
+    '<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Monthly expenses: <span style="color:#d93025">'+fmt(totalExp())+'</span></div>'+
     Object.entries(G.expenses).map(([k,v])=>row(k.charAt(0).toUpperCase()+k.slice(1),'-'+fmt(v/2)+'/check','#d93025')).join('')+
-    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px"><span>Net take-home</span><span style="color:'+(left>=0?'#1a7f4b':'#d93025')+'">'+(left>=0?fmt(left):'-'+fmt(-left))+'</span></div>';
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px"><span>Net take-home est.</span><span style="color:'+(left>0?'#1a7f4b':'#d93025')+'">'+fmt(left)+'</span></div>';
 }
 function triggerPayday(){
-  const pc=calcPC(G.draw/2,G.lockedComm),he=totalExp()/2,left=Math.max(0,pc.net-he);
-  const paid=G.lockedComm;
-  G.banks.checking.bal+=pc.net;G.banks.checking.bal-=he;
-  G.lockedComm=0;G.nextPayday+=15;
-  G.paychecks.push({day:G.day,net:pc.net,comm:paid});
-  addFeed('💰 PAYDAY — Net '+fmt(pc.net)+' deposited');
-  const row=(l,v,c)=>'<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #e5e5ea;font-size:12px"><span style="color:#6e6e73">'+l+'</span><span style="color:'+(c||'#1c1c1e')+'">'+v+'</span></div>';
-  showModal('Payday — Day '+G.day,
-    '<div style="text-align:center;margin-bottom:12px">'+
-    '<div style="font-size:38px;font-weight:700;color:#1a7f4b">'+fmt(pc.net)+'</div>'+
-    '<div style="font-size:12px;color:#6e6e73">deposited to Checking</div></div>'+
+  const paydayDate = cdToDate(G.nextPaydayCd);
+  const paydayStr  = dateShortY(paydayDate);
+  const period     = commPeriodLabel(G.nextPaydayCd);
+  const halfDraw   = G.draw / 2;
+  const exp2       = totalExp() / 2;
+
+  // Find deals included on THIS paycheck
+  const dealsOnCheck = (G.fundedDeals||[]).filter(d=>!d.paid && d.paycheckCd<=G.nextPaydayCd);
+  const dealsRolled  = (G.fundedDeals||[]).filter(d=>!d.paid && d.paycheckCd>G.nextPaydayCd);
+  const commThisCheck = dealsOnCheck.reduce((s,d)=>s+d.comm,0);
+
+  // Mark deals as paid
+  dealsOnCheck.forEach(d=>{ d.paid=true; });
+  G.lockedComm = 0;
+  G.pendingComm = Math.max(0, G.pendingComm - commThisCheck);
+
+  // Paycheck math
+  const pc  = calcPC(halfDraw, commThisCheck);
+  const left = Math.max(0, pc.net - exp2);
+
+  // Deposit
+  G.banks.checking.bal += pc.net;
+  G.banks.checking.bal -= exp2;
+  G.paychecks.push({cd:G.day, date:paydayStr, net:pc.net, comm:commThisCheck, deals:dealsOnCheck.length});
+
+  // Advance payday
+  G.nextPaydayCd = nextPaydayCd(G.nextPaydayCd + 1);
+  G.nextCutoffCd = nextCutoffCd(G.day + 1);
+
+  addFeed('💰 PAYDAY '+paydayStr+' — Net '+fmt(pc.net)+' deposited');
+
+  const row=(l,v,c)=>'<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e5e5ea;font-size:12px"><span style="color:#6e6e73">'+l+'</span><span style="color:'+(c||'#1c1c1e')+'">'+v+'</span></div>';
+
+  const dealsHtml = dealsOnCheck.length
+    ? dealsOnCheck.map(d=>'<div style="padding:3px 0;border-bottom:1px solid #f0f0f0;font-size:11px">'+
+        '<span style="color:#1a7f4b">✓</span> '+d.name+
+        ' — '+fmt(d.gp)+' GP &middot; Commission: <b>'+fmt(d.comm)+'</b>'+
+        ' &middot; Funded: '+dateShort(cdToDate(d.fundedCd))+'</div>'
+      ).join('')
+    : '<div style="font-size:11px;color:#aeaeb2;padding:3px 0">No deals funded in this commission period.</div>';
+
+  const rolledHtml = dealsRolled.length
+    ? '<div style="margin-top:6px;font-size:11px;color:#b45309">'+
+        dealsRolled.map(d=>'⏳ '+d.name+' — '+fmt(d.comm)+' comm → pays '+dateShort(cdToDate(d.paycheckCd))).join('<br>')+
+      '</div>'
+    : '';
+
+  showModal('💰 Payday — '+paydayStr,
+    '<div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:12px 14px;margin-bottom:12px">'+
+    '<div style="font-size:11px;color:#6e6e73;margin-bottom:2px">'+paydayStr+' &nbsp;&middot;&nbsp; Career Day '+G.day+'</div>'+
+    '<div style="font-size:32px;font-weight:700;color:#1a7f4b">'+fmt(pc.net)+'</div>'+
+    '<div style="font-size:11px;color:#6e6e73">net deposit to checking</div></div>'+
+
+    '<div style="font-size:11px;font-weight:600;color:#1c1c1e;margin-bottom:4px">Commission Period: '+period+'</div>'+
+    '<div style="background:#f9f9f9;border-radius:7px;padding:8px 10px;margin-bottom:10px">'+
+    dealsHtml+rolledHtml+'</div>'+
+
     '<div style="background:#f5f5f7;border-radius:8px;padding:10px 12px;margin-bottom:12px">'+
-    row('Draw (half month)',fmt(G.draw/2))+row('Commission (33% GP)',fmt(paid),'#1a7f4b')+
-    row('Federal Tax (22%)','-'+fmt(pc.fed),'#d93025')+
-    row('Social Security (6.2%)','-'+fmt(pc.ss),'#d93025')+
-    row('Medicare (1.45%)','-'+fmt(pc.mcare),'#d93025')+
-    row('Texas State Tax','$0','#1a7f4b')+
-    row('Expenses (half month)','-'+fmt(he),'#d93025')+
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:600;font-size:12px"><span>Leftover</span><span style="color:#1a7f4b">'+fmt(left)+'</span></div></div>'+
-    '<div style="font-size:12px;font-weight:600;margin-bottom:6px">Allocate leftover</div>'+
-    '<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">'+
-    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Savings</span><input id="al-sav" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
-    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Roth IRA</span><input id="al-roth" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
-    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Emergency</span><input id="al-eme" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div></div>'+
+    row('Draw (½ month)',fmt(halfDraw))+
+    row('Commission this period',fmt(commThisCheck),'#1a7f4b')+
+    row('— Federal Tax (22%)','-'+fmt(pc.fed),'#d93025')+
+    row('— Social Security (6.2%)','-'+fmt(pc.ss),'#d93025')+
+    row('— Medicare (1.45%)','-'+fmt(pc.mcare),'#d93025')+
+    row('— Texas State Tax','$0 🤠','#1a7f4b')+
+    row('— Living Expenses (½ mo)','-'+fmt(exp2),'#d93025')+
+    '<div style="display:flex;justify-content:space-between;padding:5px 0;font-weight:700;font-size:13px">'+
+    '<span>Leftover to allocate</span><span style="color:'+(left>0?'#1a7f4b':'#d93025')+'">'+fmt(left)+'</span></div></div>'+
+
+    '<div style="font-size:12px;font-weight:600;margin-bottom:6px">Allocate your leftover</div>'+
+    '<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:130px">→ High-Yield Savings</span><input id="al-sav" type="number" min="0" value="'+Math.round(left*0.1)+'" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:130px">→ Roth IRA</span><input id="al-roth" type="number" min="0" value="'+Math.round(left*0.05)+'" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:130px">→ Emergency Fund</span><input id="al-eme" type="number" min="0" value="'+Math.round(left*0.05)+'" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
+    '</div>'+
+
     '<div class="brow">'+
-    '<button style="background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit;font-weight:600" onclick="confirmAlloc('+left+')">Confirm</button>'+
-    '<button onclick="closeModal()">Leave in Checking</button></div>'+
-    '<div style="font-size:10px;color:#aeaeb2;margin-top:8px">Next pay: Day '+G.nextPayday+' · Pending: '+fmt(G.pendingComm)+'</div>'
+    '<button style="background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:inherit;font-weight:600;font-size:13px" onclick="confirmAlloc('+left+')">Confirm Allocation</button>'+
+    '<button onclick="closeModal()" style="font-size:12px;padding:9px 14px;border-radius:8px;border:1px solid #c7c7cc;background:transparent;cursor:pointer;font-family:inherit">Leave in Checking</button>'+
+    '</div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:8px">Next pay: '+dateShort(cdToDate(G.nextPaydayCd))+
+    ' &nbsp;&middot;&nbsp; Pending: '+fmt(G.pendingComm)+' &nbsp;&middot;&nbsp; Commission cutoff: '+dateShort(cdToDate(G.nextCutoffCd))+'</div>'
   );
 }
+
+
 function confirmAlloc(left){
   const s=Math.min(parseFloat(document.getElementById('al-sav').value)||0,left);
   const r=Math.min(parseFloat(document.getElementById('al-roth').value)||0,left-s);
@@ -2758,7 +3000,7 @@ function renderDashboard(){
 
 // ─── END DAY ─────────────────────────────────────────────────
 function endDay(){
-  checkCutoff();
+  runCommissionCutoff();
 
   // Unlock accounts
   G.pipe.forEach(p=>{
@@ -2819,24 +3061,22 @@ function endDay(){
   if(!G.isWeekend)G.disc=clamp(G.disc+(pct>=0.6?2:-1));
   G.isWeekend=isWknd(G.day);
 
-  // Month transition: every 30 sim days from day 1
-  if(G.day>1 && (G.day-1)%30===0){
-    G.monthly.push({m:MONTHS[G.month]||'?', gp:G.mgp||0, deals:G.mdeals||0});
-    G.month=((G.month||0)+1)%12; G.mgp=0; G.mdeals=0;
-    if(G.monthly.length>=12){showGameOver();return;}
+  // Month transition: detect real calendar month change
+  if(G.day>1){
+    const _prevDate=cdToDate(G.day-1);
+    const _curDate=cdToDate(G.day);
+    if(_curDate.getMonth()!==_prevDate.getMonth()){
+      const _prevMo=MONTH_SHORT[_prevDate.getMonth()];
+      G.monthly.push({m:_prevMo, gp:G.mgp||0, deals:G.mdeals||0});
+      G.month=_curDate.getMonth();
+      G.mgp=0; G.mdeals=0;
+      if(G.monthly.length>=12){showGameOver();return;}
+    }
   }
-  if(G.day>=G.nextPayday){
-    // Use longer delay and skip closeModal — showModal() in triggerPayday
-    // overwrites the modal directly, avoiding the close→open flicker
-    // that corrupts the overlay CSS state on Day 15
+  if(G.nextPaydayCd && G.day>=G.nextPaydayCd){
     setTimeout(()=>{
-      // Hard-reset modal wrap state before showing payday
       const wrap=document.getElementById('modal-wrap');
-      if(wrap){
-        wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);'+
-          'backdrop-filter:blur(4px);display:none;align-items:center;'+
-          'justify-content:center;z-index:99999;padding:20px;';
-      }
+      if(wrap){wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:99999;padding:20px;';}
       const box=document.getElementById('modal-box');
       if(box) box.innerHTML='';
       triggerPayday();
