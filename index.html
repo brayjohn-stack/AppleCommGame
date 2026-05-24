@@ -1,0 +1,3055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commercial Leasing Sim: Austin</title>
+<style>
+/* Reset and base */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:#f0f0f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;color:#1c1c1e;display:flex;align-items:flex-start;justify-content:center;padding:0}
+
+/* The sim fills the viewport */
+#sim-wrap{width:100%;max-width:1200px;height:100vh;display:flex;flex-direction:column;background:#ffffff;box-shadow:0 0 40px rgba(0,0,0,0.1)}
+
+/* Global button style */
+button{font-family:inherit;font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;border:1px solid #c7c7cc;background:#f5f5f7;color:#1c1c1e;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1}
+button:hover{background:#e8e8ed;border-color:#aeaeb2}
+button:active{transform:scale(.98)}
+.btn-primary{background:#0a66c2;color:#fff;border-color:#0a66c2;font-weight:600}
+.btn-primary:hover{background:#0958a8;border-color:#0958a8}
+.btn-success{background:#1a7f4b;color:#fff;border-color:#1a7f4b;font-weight:600}
+.btn-success:hover{background:#156b3e;border-color:#156b3e}
+
+/* Modal fix — position:fixed so it doesn\'t cause scroll-to-top */
+.overlay{position:fixed!important;inset:0!important;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:99999!important;padding:20px;border-radius:0;pointer-events:auto}
+.modal{background:#fff;border:1px solid #c7c7cc;border-radius:14px;padding:20px 22px;width:100%;max-width:520px;max-height:82vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,0.18);position:relative}
+</style>
+</head>
+<body>
+<div id="sim-wrap">
+
+<h2 class="sr-only">Commercial Leasing Sim Austin — June 2026. Build a fleet leasing book of business from zero over 12 months.</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#sim{font-size:13px;color:#1c1c1e;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tb{background:#f5f5f7;border-bottom:0.5px solid #e5e5ea;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tb-logo{font-size:11px;font-weight:500;letter-spacing:.1em;color:#6e6e73;white-space:nowrap}
+.tbs{display:flex;flex-direction:column;align-items:center;min-width:48px}
+.tbl{font-size:9px;color:#aeaeb2;letter-spacing:.06em;text-transform:uppercase}
+.tbv{font-size:14px;font-weight:500}
+.sep{width:0.5px;height:24px;background:#e5e5ea;flex-shrink:0}
+.layout{display:grid;grid-template-columns:168px 1fr;flex:1;overflow:hidden}
+.nav{border-right:0.5px solid #e5e5ea;padding:6px 0;display:flex;flex-direction:column;height:100%;overflow-y:auto}
+.ni{padding:7px 12px;cursor:pointer;font-size:12px;color:#6e6e73;border-left:2px solid transparent;display:flex;align-items:center;gap:7px;transition:background .1s}
+.ni:hover{background:#f5f5f7;color:#1c1c1e}
+.ni.on{border-left-color:#0a66c2;color:#0a66c2;background:#f0f6ff}
+.nl{font-size:9px;color:#aeaeb2;letter-spacing:.1em;padding:8px 12px 3px;text-transform:uppercase}
+.nbw{margin-left:auto;background:#fffbf0;color:#b45309;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:500}
+.nbd{margin-left:auto;background:#fff0f0;color:#d93025;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:500}
+.pstats{margin-top:auto;padding:8px 12px;border-top:0.5px solid #e5e5ea}
+.psrow{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.psl{font-size:9px;color:#aeaeb2;width:52px}
+.pst{flex:1;height:3px;background:#e5e5ea;border-radius:2px;overflow:hidden}
+.psf{height:100%;border-radius:2px;transition:width .4s}
+.psv{font-size:9px;color:#6e6e73;width:18px;text-align:right}
+.main{overflow-y:auto;flex:1;padding:14px 16px}
+.panel{display:none}
+.panel.on{display:block}
+.ptitle{font-size:15px;font-weight:500;margin-bottom:2px}
+.psub{font-size:11px;color:#6e6e73;margin-bottom:10px}
+.card{background:#ffffff;border:0.5px solid #e5e5ea;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.ctitle{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#aeaeb2;margin-bottom:7px}
+.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px;margin-bottom:8px}
+.mc{background:#f5f5f7;border-radius:7px;padding:8px 10px}
+.mlbl{font-size:9px;color:#aeaeb2;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.mval{font-size:18px;font-weight:500}
+.cg{color:#1a7f4b}.ca{color:#b45309}.cb{color:#0a66c2}.cr{color:#d93025}
+.daybar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.slots{display:flex;gap:3px;flex:1}
+.slot{flex:1;height:16px;border-radius:3px;border:0.5px solid #e5e5ea;background:#f5f5f7;transition:all .2s}
+.slot.used{background:#f0f6ff;border-color:#a8c4f0}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px;margin-bottom:8px}
+.abtn{background:#f5f5f7;border:0.5px solid #e5e5ea;border-radius:7px;padding:9px;cursor:pointer;text-align:left;transition:border-color .1s;position:relative}
+.abtn:hover{border-color:#c7c7cc}
+.abtn:active{transform:scale(.98)}
+.abtn.locked{opacity:.35;cursor:not-allowed;pointer-events:none}
+.aico{font-size:16px;display:block;margin-bottom:3px}
+.aname{font-size:11px;font-weight:500;margin-bottom:2px}
+.adesc{font-size:10px;color:#aeaeb2;line-height:1.3}
+.acost{position:absolute;top:5px;right:5px;font-size:9px;color:#0a66c2;background:#f0f6ff;padding:1px 4px;border-radius:3px}
+.rb{border-radius:7px;padding:9px 11px;margin-bottom:7px;font-size:12px;line-height:1.6}
+.rb-s{background:#f0faf4}
+.rb-n{background:#f5f5f7}
+.rb-e{background:#fff0f0}
+.rb-c{background:#f0f6ff}
+.rb-w{background:#fffbf0}
+.rbt{font-weight:500;margin-bottom:3px;font-size:13px}
+.insight{border-left:2px solid #a8c4f0;padding:6px 10px;margin-top:7px;font-size:11px;color:#0a66c2;line-height:1.6}
+.pcard{background:#f5f5f7;border:0.5px solid #e5e5ea;border-radius:10px;padding:9px 11px;margin-bottom:6px;transition:border-color .1s}
+.pcard.clickable{cursor:pointer}
+.pcard.clickable:hover{border-color:#c7c7cc}
+.prow{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.sbadge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:500}
+.s-lead{background:#f5f5f7;color:#6e6e73;border:0.5px solid #e5e5ea}
+.s-warm{background:#fffbf0;color:#b45309}
+.s-proposal{background:#f0f6ff;color:#0a66c2}
+.s-negotiation{background:#f3e8ff;color:#7c3aed}
+.s-closed{background:#f0faf4;color:#1a7f4b}
+.s-stalled{background:#fff0f0;color:#d93025}
+.td{width:5px;height:5px;border-radius:50%;background:#e5e5ea;display:inline-block}
+.td.f{background:#0a66c2}.td.fh{background:#1a7f4b}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;z-index:50;padding:20px 10px;border-radius:10px}
+.modal{background:#ffffff;border:0.5px solid #c7c7cc;border-radius:10px;padding:14px 16px;width:100%;max-width:440px;max-height:480px;overflow-y:auto;position:relative}
+.modtitle{font-size:15px;font-weight:500;margin-bottom:2px}
+.modsub{font-size:11px;color:#6e6e73;margin-bottom:10px}
+.brow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.reprow{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.replbl{font-size:11px;color:#6e6e73;width:110px}
+.reptrack{flex:1;height:4px;background:#e5e5ea;border-radius:2px;overflow:hidden}
+.repfill{height:100%;border-radius:2px;transition:width .5s}
+.repval{font-size:10px;color:#aeaeb2;width:22px;text-align:right}
+.step-row{display:flex;gap:0;margin-bottom:10px}
+.step{flex:1;text-align:center;padding:6px 4px;font-size:10px;border:0.5px solid #e5e5ea;color:#aeaeb2;background:#f5f5f7}
+.step:first-child{border-radius:7px 0 0 7px}
+.step:last-child{border-radius:0 7px 7px 0}
+.step.done{background:#f0faf4;color:#1a7f4b;border-color:#86d8a8}
+.step.active{background:#f0f6ff;color:#0a66c2;border-color:#a8c4f0;font-weight:500}
+.engbtn{display:block;width:100%;text-align:left;padding:9px 11px;border:0.5px solid #e5e5ea;border-radius:7px;cursor:pointer;margin-bottom:5px;background:#f5f5f7;font-size:12px;transition:border-color .1s}
+.engbtn:hover{border-color:#c7c7cc;background:#ffffff}
+.engbtn:active{transform:scale(.99)}
+.engbtn .label{font-weight:500;margin-bottom:2px}
+.engbtn .sub{font-size:10px;color:#aeaeb2;line-height:1.4}
+.feed{max-height:100px;overflow-y:auto;border-top:0.5px solid #e5e5ea;padding-top:7px;margin-top:7px}
+.fitem{font-size:11px;color:#6e6e73;padding:3px 0;border-bottom:0.5px solid #e5e5ea;line-height:1.4}
+.fitem:last-child{border-bottom:none}
+.fday{font-size:9px;color:#aeaeb2;margin-right:5px}
+.howto{background:#f0f6ff;border:0.5px solid #a8c4f0;border-radius:7px;padding:9px 11px;margin-bottom:10px;font-size:12px;color:#0a66c2;line-height:1.6}
+.howto b{color:#1c1c1e}
+</style>
+
+<div id="sim">
+<div class="tb">
+  <span class="tb-logo">▲ LEASING SIM: AUSTIN</span>
+  <div class="sep"></div>
+  <div class="tbs"><span class="tbl">Checking</span><span class="tbv" id="tb-cash" style="color:#1a7f4b">$0</span></div>
+  <div class="tbs"><span class="tbl">Next Pay</span><span class="tbv" id="tb-nextpay" style="color:#b45309">Day 15</span></div>
+  <div class="sep"></div>
+  <div class="tbs"><span class="tbl">Day</span><span class="tbv cb" id="tb-day">1</span></div>
+  <div class="tbs"><span class="tbl">Month</span><span class="tbv" id="tb-mo">Jan</span></div>
+  <div class="sep"></div>
+  <div class="tbs"><span class="tbl">Gross Profit</span><span class="tbv cg" id="tb-gp">$0</span></div>
+  <div class="tbs"><span class="tbl">Deals</span><span class="tbv ca" id="tb-deals">0</span></div>
+  <div class="tbs"><span class="tbl">Vehicles</span><span class="tbv cb" id="tb-veh">0</span></div>
+  <div class="tbs"><span class="tbl">Pipeline</span><span class="tbv" id="tb-pipe">0</span></div>
+</div>
+
+<div class="layout" style="position:relative" id="layout">
+<div class="nav">
+  <div class="nl">Daily</div>
+  <div class="ni on" data-panel="daily" onclick="switchNav(this)"><span>⚡</span>Actions</div>
+  <div class="nl">Pipeline</div>
+  <div class="ni" data-panel="engage" onclick="switchNav(this)"><span>🤝</span>Engage<span class="nbw" id="nb-e">0</span></div>
+  <div class="ni" data-panel="crm" onclick="switchNav(this)"><span>📊</span>CRM</div>
+  <div class="ni" data-panel="followups" onclick="switchNav(this)"><span>🔁</span>Follow-ups<span class="nbd" id="nb-f">0</span></div>
+  <div class="nl">Money</div>
+  <div class="ni" data-panel="finance" onclick="switchNav(this)"><span>🏦</span>Bank Accounts</div>
+  <div class="nl">Learn</div>
+  <div class="ni" data-panel="learn" onclick="switchNav(this)"><span>📚</span>Academy</div>
+  <div class="nl">Score</div>
+  <div class="ni" data-panel="rep" onclick="switchNav(this)"><span>⭐</span>Reputation</div>
+  <div class="ni" data-panel="dash" onclick="switchNav(this)"><span>📈</span>Dashboard</div>
+  <div class="pstats">
+    <div class="nl" style="padding:0 0 5px">Rep stats</div>
+    <div class="psrow"><span class="psl">Confidence</span><div class="pst"><div class="psf" id="ps-c" style="width:60%;background:#0a66c2"></div></div><span class="psv" id="pv-c">60</span></div>
+    <div class="psrow"><span class="psl">Energy</span><div class="pst"><div class="psf" id="ps-e" style="width:80%;background:#1a7f4b"></div></div><span class="psv" id="pv-e">80</span></div>
+    <div class="psrow"><span class="psl">Discipline</span><div class="pst"><div class="psf" id="ps-d" style="width:50%;background:#8b5cf6"></div></div><span class="psv" id="pv-d">50</span></div>
+    <div class="psrow"><span class="psl">Momentum</span><div class="pst"><div class="psf" id="ps-m" style="width:20%;background:#b45309"></div></div><span class="psv" id="pv-m">20</span></div>
+  <div class="psrow"><span class="psl">Burnout</span><div class="pst"><div class="psf" id="ps-b" style="width:0%;background:#d93025"></div></div><span class="psv" id="pv-b">0</span></div>
+  </div>
+</div>
+
+<div class="main" id="main">
+
+<!-- DAILY ACTIONS -->
+<div class="panel on" id="panel-daily">
+  <div class="ptitle" id="day-title">Monday — Week 1, June</div>
+  <div class="psub" id="day-sub">4 time slots today. Choose your actions.</div>
+  <div class="daybar card" style="margin-bottom:8px">
+    <div style="min-width:80px;flex-shrink:0"><div class="mlbl">Action Points</div><div style="font-family:monospace;font-size:14px;font-weight:600" id="ap-val">15/15 AP</div></div>
+    <div style="flex:1;height:14px;background:#e5e5ea;border-radius:7px;overflow:hidden"><div id="ap-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#0a66c2,#34aadc);border-radius:7px;transition:width 0.3s"></div></div>
+    <button class="btn-primary" style="font-size:12px;padding:7px 14px" onclick="endDay()">End day →</button>
+  </div>
+
+  <div id="burnout-alert" style="display:none;background:#fff0f0;border:1px solid #f0a0a0;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#d93025">⚠️ <b>High Burnout</b> — actions are less effective. Use the weekend to recover.</div>
+
+  <!-- WEEKEND PANEL -->
+  <div id="wknd-panel" style="display:none">
+    <div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:22px">🌅</span>
+      <div><div style="font-weight:600;color:#1a7f4b;margin-bottom:2px" id="wknd-day-name">Saturday</div>
+      <div style="font-size:11px;color:#6e6e73;line-height:1.5">No office today. 1 slot — rest, connect, or explore Austin. Resting resets burnout.</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Weekend Options</div>
+      <div class="agrid">
+        <div class="abtn" onclick="weekendAct('rest')"><span class="acost" style="color:#1a7f4b;background:#f0faf4">FREE</span><span class="aico">🛋️</span><div class="aname">Rest at Home</div><div class="adesc">Big burnout reset. Full recovery.</div></div>
+        <div class="abtn" onclick="weekendAct('workout')"><span class="acost" style="color:#1a7f4b;background:#f0faf4">FREE</span><span class="aico">💪</span><div class="aname">Work Out / Run</div><div class="adesc">Barton Creek trail. Resets burnout + confidence.</div></div>
+        <div class="abtn" onclick="weekendAct('connect')"><span class="acost" style="color:#1a7f4b;background:#f0faf4">FREE</span><span class="aico">⛳</span><div class="aname">Golf / Connect</div><div class="adesc">Organic networking. May surface a prospect.</div></div>
+        <div class="abtn" onclick="weekendAct('post')"><span class="acost" style="color:#1a7f4b;background:#f0faf4">FREE</span><span class="aico">📲</span><div class="aname">Post on LinkedIn</div><div class="adesc">Saturday content. Builds awareness while you rest.</div></div>
+        <div class="abtn" onclick="weekendAct('go_out')"><span class="acost" style="color:#b45309;background:#fffbf0">$100–250</span><span class="aico">🍻</span><div class="aname">Go Out in Austin</div><div class="adesc">South Congress. Fun. Costs cash from checking.</div></div>
+        <div class="abtn" onclick="weekendAct('study')"><span class="acost" style="color:#1a7f4b;background:#f0faf4">FREE</span><span class="aico">📖</span><div class="aname">Study / Prep Week</div><div class="adesc">Review pipeline. Plan Monday. Boosts discipline.</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-bottom:10px"><button class="btn-primary" onclick="closeModal();endDay()">Finish Weekend Day →</button></div>
+  </div>
+
+  <!-- WEEKDAY ACTIONS (hidden on weekends) -->
+  <div id="wkdy-panel">
+  <div class="card" style="background:#fff8e1;border-color:#ffe082;margin-bottom:8px">
+    <div class="ctitle" style="color:#b45309">June 2026 — Your First Day</div>
+    <div style="font-size:12px;color:#1c1c1e;line-height:1.65">
+      Austin is in peak HVAC and landscaping season. Service businesses are stressed — trucks breaking down, routes getting missed. You have zero pipeline and zero reputation, but you know the product cold. <b>Your job this month: prospect hard, learn fast, close nothing yet.</b> Deals close in weeks, not days. Build pipeline first.
+    </div>
+  </div>
+  <div id="ctx-card" class="card" style="display:none"><div class="ctitle">Market Context</div><div id="ctx-text" style="font-size:12px;color:#6e6e73;line-height:1.6"></div></div>
+
+  <div class="card">
+    <div class="ctitle">Prospecting — finds new companies</div>
+    <div class="agrid">
+      <div class="abtn" onclick="act('cold_call')"><span class="acost" style="color:#b45309;background:rgba(180,83,9,0.08)">2 AP</span><span class="aico">📞</span><div class="aname">Cold Call Block</div><div class="adesc">Call 15–20 trade businesses</div></div>
+      <div class="abtn" onclick="act('drive_territory')"><span class="acost" style="color:#d93025;background:rgba(220,38,38,0.08)">3 AP</span><span class="aico">🚗</span><div class="aname">Drive Territory</div><div class="adesc">Spot fleets, drop in unannounced</div></div>
+      <div class="abtn" onclick="act('door_knock')"><span class="acost" style="color:#0a66c2;background:rgba(10,102,194,0.08)">1 AP</span><span class="aico">🚪</span><div class="aname">Drop In / Canvass</div><div class="adesc">Walk business parks cold</div></div>
+      <div class="abtn" onclick="act('linkedin')"><span class="acost" style="color:#0a66c2;background:rgba(10,102,194,0.08)">1 AP</span><span class="aico">💼</span><div class="aname">LinkedIn Outreach</div><div class="adesc">Message owners and fleet managers</div></div>
+      <div class="abtn" onclick="act('networking')"><span class="acost" style="color:#b45309;background:rgba(180,83,9,0.08)">2 AP</span><span class="aico">🤝</span><div class="aname">Networking Event</div><div class="adesc">Chamber, BNI, contractor meetups</div></div>
+      <div class="abtn" onclick="act('cpa_lunch')"><span class="acost" style="color:#b45309;background:rgba(180,83,9,0.08)">2 AP</span><span class="aico">🍽️</span><div class="aname">CPA Lunch</div><div class="adesc">Build referral partnerships</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Deal Work — moves pipeline forward</div>
+    <div class="howto">
+      <b>How deals work:</b> Prospect → engage them in the Engage tab → follow up to build trust → send proposal → close. Each engage action costs 1 slot and moves them through the pipeline.
+    </div>
+    <div class="agrid">
+      <div class="abtn" id="btn-engage-act" onclick="goEngage()" style="border-color:#a8c4f0"><span class="acost" style="color:#0a66c2;background:rgba(10,102,194,0.08)">1 AP</span><span class="aico">🤝</span><div class="aname">Engage a Prospect</div><div class="adesc">Pick someone to call, visit, or pitch</div></div>
+      <div class="abtn" onclick="act('study_product')"><span class="acost" style="color:#b45309;background:rgba(180,83,9,0.08)">2 AP</span><span class="aico">📖</span><div class="aname">Study Products</div><div class="adesc">TRAC leases, residuals, upfits</div></div>
+      <div class="abtn" onclick="act('create_content')"><span class="acost" style="color:#b45309;background:rgba(180,83,9,0.08)">2 AP</span><span class="aico">✍️</span><div class="aname">Create Content</div><div class="adesc">LinkedIn fleet tips for awareness</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Activity feed</div>
+    <div class="feed" id="feed"><div class="fitem" style="color:#aeaeb2">No activity yet — take an action above.</div></div>
+  </div>
+  </div><!-- /wkdy-panel -->
+</div><!-- /panel-daily (close injected) -->
+
+<!-- FINANCE PANEL -->
+<div class="panel" id="panel-finance">
+  <div class="ptitle">Bank Accounts</div>
+  <div class="psub">Updated every payday — 1st &amp; 15th of each sim-month</div>
+  <div id="bank-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:14px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="card">
+      <div class="ctitle">Next Paycheck</div>
+      <div id="pay-preview" style="font-size:12px;color:#6e6e73">Loading...</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Expense Tracker</div>
+      <div id="exp-preview" style="font-size:12px;color:#6e6e73">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGAGE PANEL -->
+<div class="panel" id="panel-engage">
+  <div style="position:sticky;top:0;z-index:10;background:#fff;padding:8px 0 10px;margin-bottom:4px;border-bottom:1px solid #e5e5ea">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:11px;color:#6e6e73;white-space:nowrap">AP remaining:</div>
+      <div style="flex:1;height:10px;background:#e5e5ea;border-radius:5px;overflow:hidden">
+        <div id="engage-ap-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#0a66c2,#34aadc);border-radius:5px;transition:width 0.3s"></div>
+      </div>
+      <div style="font-family:monospace;font-size:13px;font-weight:600;color:#0a66c2;white-space:nowrap" id="engage-ap-val">15/15</div>
+      <button onclick="endDay()" style="font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid #c7c7cc;background:#f5f5f7;cursor:pointer;white-space:nowrap">End Day →</button>
+    </div>
+  </div>
+  <div class="ptitle">Engage a Prospect</div>
+  <div class="psub">Pick someone to interact with. Each engagement costs 1 time slot and moves the deal forward (or reveals problems).</div>
+  <div class="howto">
+    <b>The deal path:</b> Lead → Warm → Proposal → Negotiation → Closed.<br>
+    Each time you engage someone, the interaction plays out based on their personality, trust level, and urgency. Some advance quickly. Others ghost you. Build trust before pitching.
+  </div>
+  <div id="engage-list"><div style="color:#aeaeb2;text-align:center;padding:2rem;font-size:12px">No prospects yet — go prospect first using the actions in the Daily tab.</div></div>
+</div>
+
+<!-- CRM PANEL -->
+<div class="panel" id="panel-crm">
+  <div class="ptitle">Pipeline CRM</div>
+  <div class="psub">Every company in your pipeline</div>
+  <div class="mrow">
+    <div class="mc"><div class="mlbl">Lead</div><div class="mval" id="pm-lead">0</div></div>
+    <div class="mc"><div class="mlbl">Warm</div><div class="mval ca" id="pm-warm">0</div></div>
+    <div class="mc"><div class="mlbl">Proposal</div><div class="mval cb" id="pm-prop">0</div></div>
+    <div class="mc"><div class="mlbl">Stalled</div><div class="mval cr" id="pm-stall">0</div></div>
+    <div class="mc"><div class="mlbl">Closed</div><div class="mval cg" id="pm-closed">0</div></div>
+  </div>
+  <div id="crm-list"><div style="color:#aeaeb2;text-align:center;padding:2rem;font-size:12px">Pipeline empty.</div></div>
+</div>
+
+<!-- FOLLOW-UPS -->
+<div class="panel" id="panel-followups">
+  <div class="ptitle">Follow-Up Queue</div>
+  <div class="psub">Prospects past their follow-up date — don\'t let them go cold</div>
+  <div id="fu-list"><div style="color:#aeaeb2;text-align:center;padding:2rem;font-size:12px">No follow-ups due yet.</div></div>
+</div>
+
+<!-- LEARN -->
+<div class="panel" id="panel-learn">
+  <div class="ptitle">Fleet Academy</div>
+  <div class="psub">Deliberate training. Visible progression. Real competence.</div>
+  <div id="academy-career-banner" style="background:#f0f6ff;border:1px solid #a8c4f0;border-radius:10px;padding:12px 14px;margin-bottom:12px">
+    <div style="font-size:10px;color:#aeaeb2;letter-spacing:.08em;margin-bottom:3px">CAREER LEVEL</div>
+    <div style="font-size:18px;font-weight:700;color:#0a66c2" id="academy-level">Green Rookie</div>
+    <div style="font-size:11px;color:#6e6e73;margin-top:3px" id="academy-tip">Focus on TRAC basics and discovery first.</div>
+  </div>
+  <div id="academy-pk-bars" style="margin-bottom:12px"></div>
+  <button class="btn-primary" onclick="doStudyProduct()" style="width:100%;margin-bottom:8px;padding:10px;font-size:13px">📚 Open Training Modules →</button>
+  <div class="card">
+    <div class="ctitle">Why this matters</div>
+    <div style="font-size:12px;color:#6e6e73;line-height:1.7">
+      Every module increases specific competencies. Higher knowledge unlocks stronger CPA conversations, more confident closes, and better discovery. The difference between a 30-day rep and a 90-day rep is depth — not luck.
+    </div>
+  </div>
+</div>
+
+<!-- REPUTATION -->
+<div class="panel" id="panel-rep">
+  <div class="ptitle">Your Reputation</div>
+  <div class="psub">How Austin's service business community sees you</div>
+  <div class="card">
+    <div class="ctitle">Market presence</div>
+    <div class="reprow"><span class="replbl">Local Awareness</span><div class="reptrack"><div class="repfill" id="r-aw" style="width:5%;background:#0a66c2"></div></div><span class="repval" id="rv-aw">5</span></div>
+    <div class="reprow"><span class="replbl">Trust Level</span><div class="reptrack"><div class="repfill" id="r-tr" style="width:10%;background:#0a66c2"></div></div><span class="repval" id="rv-tr">10</span></div>
+    <div class="reprow"><span class="replbl">Professionalism</span><div class="reptrack"><div class="repfill" id="r-pr" style="width:40%;background:#0a66c2"></div></div><span class="repval" id="rv-pr">40</span></div>
+    <div class="reprow"><span class="replbl">Fleet Authority</span><div class="reptrack"><div class="repfill" id="r-au" style="width:5%;background:#8b5cf6"></div></div><span class="repval" id="rv-au">5</span></div>
+    <div class="reprow"><span class="replbl">Social Influence</span><div class="reptrack"><div class="repfill" id="r-so" style="width:0%;background:#b45309"></div></div><span class="repval" id="rv-so">0</span></div>
+    <div class="reprow"><span class="replbl">Referral Network</span><div class="reptrack"><div class="repfill" id="r-rf" style="width:0%;background:#1a7f4b"></div></div><span class="repval" id="rv-rf">0</span></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="panel" id="panel-dash">
+  <div class="ptitle">Performance Dashboard</div>
+  <div class="psub">12-month scorecard</div>
+  <div class="mrow">
+    <div class="mc"><div class="mlbl">Gross Profit</div><div class="mval cg" id="d-gp">$0</div></div>
+    <div class="mc"><div class="mlbl">Deals</div><div class="mval ca" id="d-deals">0</div></div>
+    <div class="mc"><div class="mlbl">Vehicles</div><div class="mval cb" id="d-veh">0</div></div>
+    <div class="mc"><div class="mlbl">Referrals</div><div class="mval cg" id="d-ref">0</div></div>
+  </div>
+  <div class="card"><div class="ctitle">Pipeline health</div><div id="d-health" style="font-size:12px;color:#aeaeb2">Build your pipeline to see health metrics.</div></div>
+  <div class="card"><div class="ctitle">Monthly GP</div><div id="d-monthly" style="font-size:12px;color:#aeaeb2">No monthly data yet.</div></div>
+</div>
+
+</div>
+</div>
+
+<div class="overlay" id="modal-wrap" style="display:none">
+  <div class="modal" id="modal-box"></div>
+</div>
+</div>
+
+
+<script>
+const COMPANIES = [
+  // Each company has: public info (always visible) + hidden info (revealed through discovery)
+  // HVAC
+  {id:'hc_hvac',name:'Hill Country HVAC',industry:'HVAC',emoji:'❄️',loc:'Cedar Park',fleetSize:6,vehicleTypes:'Ford Transit vans',approxAge:'2016-2018',ownerName:'Marcus Rivera',
+   _disc:{pain:'Two trucks out this month — missed $8K in calls',cashFlow:'strong summers, slow winters',accountant:'outside CPA named Greg at Green Tax',accountantStance:'neutral on leasing',timeline:'wants resolved before July 4th rush',urgency:9,creditRisk:'low',decisionMakers:['Marcus','wife Lisa co-signs anything over $50K'],replacementPlan:'reactively replacing oldest unit',currentFinancing:'bought last 3 trucks through dealer'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'alpine_hvac',name:'AlpineTech HVAC',industry:'HVAC',emoji:'🌡️',loc:'Leander',fleetSize:9,vehicleTypes:'Mix of Transit and Sprinter',approxAge:'2015-2017',ownerName:'Rick Morales',
+   _disc:{pain:'Fleet manager quit last month partly over truck quality',cashFlow:'very strong — $2.1M last year',accountant:'uses wife\'s bookkeeper + H&R Block',accountantStance:'owner makes own decisions',timeline:'immediate — already shopping',urgency:10,creditRisk:'low',decisionMakers:['Rick alone'],replacementPlan:'replace all 9 over next 18 months',currentFinancing:'mix of loans and cash'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'frost_hvac',name:'Frost King Air',industry:'HVAC',emoji:'🧊',loc:'Pflugerville',fleetSize:5,vehicleTypes:'Chevy Express cargo vans',approxAge:'2017-2019',ownerName:'Derek Simmons',
+   _disc:{pain:'One tech refused to drive oldest van on highway after blowout scare',cashFlow:'tight — took PPP loan that hurt relationships with bank',accountant:'local CPA Lisa at Streamline who loves leasing',accountantStance:'strong advocate — will push for it',timeline:'Q3 target but could move faster',urgency:6,creditRisk:'medium — some late payments 2022',decisionMakers:['Derek','silent partner in Dallas'],replacementPlan:'replace 2 worst units first',currentFinancing:'bank loans through Frost Bank'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'texair',name:'TexAir Solutions',industry:'HVAC',emoji:'💨',loc:'Hutto',fleetSize:4,vehicleTypes:'Ford Transit Connect',approxAge:'2018-2020',ownerName:'Carla Nguyen',
+   _disc:{pain:'Expanding into commercial buildings — current vans too small for equipment',cashFlow:'strong growth — up 40% YoY',accountant:'no CPA yet — uses QuickBooks and files her own taxes',accountantStance:'n/a',timeline:'needs trucks for new contract starting August 1',urgency:8,creditRisk:'low',decisionMakers:['Carla only'],replacementPlan:'add 2-3 larger vans, keep current ones',currentFinancing:'cash purchase only — hates debt'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // PLUMBING
+  {id:'reliable_rooter',name:'Reliable Rooter Plumbing',industry:'Plumbing',emoji:'🔧',loc:'Round Rock',fleetSize:4,vehicleTypes:'Chevy cargo vans',approxAge:'2015-2017',ownerName:'Dave Kowalski',
+   _disc:{pain:'Oldest van had $4,200 repair — mechanic says next one is a rebuild',cashFlow:'moderate — seasonal dips in winter',accountant:'wife\'s brother is their accountant — very conservative',accountantStance:'against leasing — thinks ownership is always better',timeline:'will wait until van physically dies',urgency:4,creditRisk:'low',decisionMakers:['Dave','accountant brother-in-law Gary'],replacementPlan:'buy used replacement when needed',currentFinancing:'all cash purchases'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'precision_plumbing',name:'Precision Plumbing',industry:'Plumbing',emoji:'🚿',loc:'Georgetown',fleetSize:7,vehicleTypes:'Ford Transit Medium Roof',approxAge:'2017-2019',ownerName:'Lisa Chen',
+   _disc:{pain:'Hiring is hard — techs see old vans and turn down offers',cashFlow:'excellent — $1.8M revenue',accountant:'outside CPA Mark who actively suggests TRAC to clients',accountantStance:'very favorable',timeline:'wants to present at quarterly business review in 6 weeks',urgency:6,creditRisk:'low',decisionMakers:['Lisa','husband reviews but defers to her'],replacementPlan:'replace oldest 3 this year, rest next year',currentFinancing:'mix of bank loans and dealer financing'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'capitol_plumbing',name:'Capitol Plumbing Co',industry:'Plumbing',emoji:'🪠',loc:'Austin',fleetSize:13,vehicleTypes:'Mix of Ram ProMaster and Transit',approxAge:'2018-2021',ownerName:'Tony Reeves',
+   _disc:{pain:'Lost a $300K commercial contract because trucks looked unprofessional at walkthrough',cashFlow:'strong but spending heavily on growth',accountant:'internal controller Maria + outside CPA firm',accountantStance:'Maria ran the numbers and prefers leasing for cash flow',timeline:'wants vehicles before downtown project starts in 60 days',urgency:8,creditRisk:'low',decisionMakers:['Tony','Maria signs off on financials'],replacementPlan:'replace entire fleet over 2 years',currentFinancing:'SBA loan from 2020 still active'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // ELECTRICAL
+  {id:'lone_star_elec',name:'Lone Star Electric',industry:'Electrical',emoji:'⚡',loc:'Pflugerville',fleetSize:8,vehicleTypes:'Ford Transit cargo vans',approxAge:'2017-2020',ownerName:'Sandra Tran',
+   _disc:{pain:'Fleet manager built a spreadsheet: $28K in repairs last year, trending worse',cashFlow:'good — consistent commercial contracts',accountant:'CPA firm downtown, partner named Richard',accountantStance:'neutral — never dealt with TRAC before, needs education',timeline:'Q3 — after summer contracts wrap',urgency:5,creditRisk:'low',decisionMakers:['Sandra','Richard the CPA'],replacementPlan:'phased replacement starting with 3 worst units',currentFinancing:'all purchased through credit union'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'ace_elec',name:'Ace Electrical',industry:'Electrical',emoji:'🔌',loc:'Buda',fleetSize:4,vehicleTypes:'Upfitted Ford Transit High Roof',approxAge:'2019-2021',ownerName:'Tom Barrett',
+   _disc:{pain:'Just won $2M commercial contract — upfitted vans needed by August or penalty clause kicks in',cashFlow:'excellent with new contract incoming',accountant:'no dedicated CPA — uses TurboTax Pro',accountantStance:'n/a — Tom decides alone',timeline:'4-6 weeks — hard deadline',urgency:10,creditRisk:'low',decisionMakers:['Tom only — very decisive'],replacementPlan:'add 3 upfitted vans immediately',currentFinancing:'cash purchase preference but open to leasing for speed'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // ROOFING
+  {id:'summit_roofing',name:'Summit Roofing Co',industry:'Roofing',emoji:'🏠',loc:'Dripping Springs',fleetSize:5,vehicleTypes:'Ram 1500 and F-150 crew cabs',approxAge:'2017-2019',ownerName:'Cody Walker',
+   _disc:{pain:'Storm season — backlogged 6 weeks, one truck limping, turning down jobs',cashFlow:'feast or famine — currently feast',accountant:'uses H&R Block, no dedicated advisor',accountantStance:'n/a — Cody decides fast',timeline:'immediate — losing money every day trucks are down',urgency:9,creditRisk:'medium — missed a loan payment in 2023',decisionMakers:['Cody alone'],replacementPlan:'replace worst 2 now',currentFinancing:'dealer financed last trucks'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'texas_storm',name:'Texas Storm Pros',industry:'Roofing',emoji:'🌪️',loc:'Buda',fleetSize:14,vehicleTypes:'F-250 and Ram 2500 crew cabs',approxAge:'2018-2021',ownerName:'Hunter Calloway',
+   _disc:{pain:'Scaling from $2M to $5M — current trucks limit crew size and job count',cashFlow:'strong but highly seasonal',accountant:'CPA named Patricia who handles 3 other roofing companies',accountantStance:'familiar with fleet leasing, has done it for other clients',timeline:'before next storm season peak — 90 days',urgency:7,creditRisk:'low',decisionMakers:['Hunter','Patricia the CPA'],replacementPlan:'add 6 trucks this year, replace 4 oldest',currentFinancing:'mix of bank and dealer'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // LANDSCAPING
+  {id:'texas_turf',name:'Texas Turf Landscaping',industry:'Landscaping',emoji:'🌿',loc:'Manor',fleetSize:12,vehicleTypes:'F-250 and enclosed trailers',approxAge:'2019-2022',ownerName:'Jorge Espinoza',
+   _disc:{pain:'Won 3 HOA contracts — needs 4 trucks immediately or loses contracts',cashFlow:'excellent — just signed $800K in annual contracts',accountant:'brother handles bookkeeping, no CPA',accountantStance:'n/a — Jorge moves fast and alone',timeline:'30 days — contract start date fixed',urgency:10,creditRisk:'low',decisionMakers:['Jorge only'],replacementPlan:'add 4 trucks for new contracts',currentFinancing:'always bought cash — first time considering financing'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'greenleaf',name:'Greenleaf Property Services',industry:'Landscaping',emoji:'🍃',loc:'Round Rock',fleetSize:18,vehicleTypes:'F-250, enclosed and open trailers',approxAge:'2016-2020',ownerName:'Miguel Rios',
+   _disc:{pain:'Losing HOA bids to competitors with newer-looking trucks',cashFlow:'strong — $2.4M revenue',accountant:'CPA firm with 3 partners — slow and conservative',accountantStance:'skeptical of leasing, wants full analysis',timeline:'Q4 — after HOA bid season',urgency:4,creditRisk:'low',decisionMakers:['Miguel','CPA firm partnership'],replacementPlan:'phased over 2-3 years',currentFinancing:'bank loans through Chase'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // PEST CONTROL
+  {id:'aquaguard',name:'AquaGuard Pest Control',industry:'Pest Control',emoji:'🐛',loc:'South Austin',fleetSize:3,vehicleTypes:'Nissan NV cargo vans',approxAge:'2014-2016',ownerName:'Pat Nguyen',
+   _disc:{pain:'Lost a Tarrytown client who said the van looked "sketchy" in their driveway',cashFlow:'tight — recovering from slow winter',accountant:'none — QuickBooks and H&R Block',accountantStance:'n/a',timeline:'vague — when finances allow',urgency:4,creditRisk:'medium-high — below-average credit from 2021 bankruptcy',decisionMakers:['Pat and spouse Kim — Kim controls finances'],replacementPlan:'replace oldest van only',currentFinancing:'all cash purchases only — can\'t qualify for loans easily'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  {id:'texguard',name:'TexGuard Exterminators',industry:'Pest Control',emoji:'🪲',loc:'Cedar Park',fleetSize:11,vehicleTypes:'Ford Transit Connect',approxAge:'2016-2019',ownerName:'Ed Morales',
+   _disc:{pain:'Old trucks breaking down mid-route — losing service calls and clients',cashFlow:'strong — franchise system provides stability',accountant:'franchise corporate has a preferred vendor list and CPA firm',accountantStance:'franchise CPA familiar with TRAC, generally supportive',timeline:'looking now — already talked to 2 other reps',urgency:8,creditRisk:'low',decisionMakers:['Ed','franchise corporate approval needed over $100K'],replacementPlan:'replace 5 oldest immediately',currentFinancing:'franchise preferred lender — SunTrust'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // CONSTRUCTION
+  {id:'capitol_contractors',name:'Capital City Contractors',industry:'Construction',emoji:'🏗️',loc:'Austin',fleetSize:15,vehicleTypes:'F-250 and F-350 Super Duty',approxAge:'2019-2021',ownerName:'Brian Okafor',
+   _disc:{pain:'Controller flagged fleet depreciation dragging down balance sheet at bank review',cashFlow:'strong but leveraged — active SBA loan',accountant:'3-partner CPA firm, very analytical',accountantStance:'prefers lease for balance sheet treatment — already discussed internally',timeline:'next fiscal quarter — 60-90 days',urgency:6,creditRisk:'low',decisionMakers:['Brian','CFO Diane','CPA firm approval'],replacementPlan:'systematic replacement — 5 per year',currentFinancing:'mix of bank and manufacturer financing'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+
+  // SERVICE / SPECIALTY
+  {id:'texPro',name:'TexPro Fire & Safety',industry:'Fire & Safety',emoji:'🔥',loc:'Cedar Park',fleetSize:6,vehicleTypes:'Ford Transit upfitted',approxAge:'2018-2020',ownerName:'Denise Owens',
+   _disc:{pain:'State compliance requires vehicles under 5 years old for re-certification — currently failing',cashFlow:'stable government contracts',accountant:'CPA named Carl who handles other compliance-heavy businesses',accountantStance:'supportive — understands regulatory drivers',timeline:'must be resolved by September 1 or loses certification',urgency:9,creditRisk:'low',decisionMakers:['Denise','state licensing board deadline is the real decider'],replacementPlan:'replace all 6 on compliance schedule',currentFinancing:'government contract financing — slow process'},
+   disc:null,stage:'prospect',trust:0,touches:0,lastContact:null,nextFollowUp:null,locked:false,lockedReason:null,lockedUntil:null,irritation:0,docStatus:null,note:'',dealHealth:100,closedDay:null},
+];
+
+
+const RESPONSES = {
+  // First touch — before any discovery
+  first_touch_voicemail:[
+    'Went to voicemail. Left a message referencing their specific vehicle you saw on your territory drive.',
+    'Voicemail. Left your name and that you work with fleet businesses in their area. Short, no pitch.',
+    'Rang through to voicemail — mailbox full. Couldn\'t leave a message. Try text or LinkedIn.',
+    'Voicemail. Three rings. Standard. Left a 20-second message with your name and number.',
+    'Got the automated operator voicemail, not the owner\'s direct line. Didn\'t leave a message — too generic.',
+  ],
+  first_touch_gatekeeper:[
+    'Front desk said owner is on a job. They took your name. That\'s it.',
+    'Receptionist was friendly but gave nothing. "He\'ll call you back" — they won\'t.',
+    'Fleet manager answered. Not the decision maker. You got the owner\'s direct line.',
+    'Office manager picked up. Said she handles fleet inquiries but has no authority. Got the owner\'s cell.',
+    'Called and immediately put on hold. After 3 minutes, disconnected. Try early morning.',
+  ],
+  first_touch_brushoff:[
+    '"We\'re good." Click.',
+    '"Not interested." Before you finished your first sentence.',
+    '"We just bought trucks." — You saw those trucks. They\'re not new.',
+    '"Send me something in the mail." Translation: no.',
+    '"We have someone for that." You\'re not sure if that\'s true or a brush-off.',
+    '"I\'m in a meeting." May be true. Try back in 2 hours.',
+    '"Call me next month." Vague. You have no idea if this is real or a polite no.',
+  ],
+  first_touch_curious:[
+    'They let you talk for 90 seconds. Then: "How does that work exactly?" That\'s a door.',
+    '"I\'ve been thinking about this actually." Unexpected. They\'re already aware of the problem.',
+    '"What\'s the difference between leasing and financing?" Good question. Real interest.',
+    '"My buddy leases his trucks and loves it. I never looked into it." Warm.',
+    '"Our trucks are getting old — is this something that helps with that?" Yes. Yes it does.',
+    '"We just had a $3,000 repair bill last week. Tell me more."',
+    '"How long does this usually take to set up?" Logistics question — they\'re imagining it.',
+  ],
+  first_touch_timing_delay:[
+    '"Call me in September — we\'re slammed right now."',
+    '"We\'re in the middle of a big project. Not the right time."',
+    '"After the summer rush. Check back in August."',
+    '"My accountant is doing our taxes right now. Bad month."',
+    '"We just made a vehicle decision. Talk to me Q1."',
+    '"I\'m out of town for 2 weeks. Call me July 15th."',
+    '"We\'re in a hiring push — trucks aren\'t top of mind right now."',
+  ],
+  first_touch_pain_signal:[
+    '"Honestly our vans have been killing us. What are you offering?"',
+    '"I literally wrote a check for $4,800 in repairs yesterday. You have good timing."',
+    '"We\'ve been talking about upgrading the fleet for a year. Nothing\'s happened."',
+    '"Two trucks in the shop right now. I\'m all ears."',
+    '"We turned down a job last week because we didn\'t have a reliable truck available."',
+    '"I\'ve been getting quotes. Nobody\'s made it make sense yet."',
+  ],
+
+  // Connected — after first real conversation
+  connected_schedule_discovery:[
+    '"Yeah, let\'s look at this more seriously. When can you come by?"',
+    '"Can you do a Zoom? I have 30 minutes Thursday at 2."',
+    '"Send me some info first. If it looks right I\'ll book a call."',
+    '"Talk to me next week. I want to pull our repair records together first."',
+    '"Let me check with my accountant. Can you email me the overview?"',
+  ],
+  connected_soft_no:[
+    '"I\'ll think about it." Said with the tone of someone who won\'t.',
+    '"We\'re not at a point where we can make this kind of decision right now."',
+    '"My partner handles that side. I\'ll mention it." You\'ll never hear back from this.',
+    '"I\'m locked in with my dealer right now. Maybe next time."',
+  ],
+
+  // Discovery — what you learn when they open up
+  discovery_light:[
+    'They shared general fleet info but kept financials close. You know the fleet makeup and rough age. Pain is implied but not confirmed.',
+    'Good 20-minute call. You got fleet count and vehicle types. They mentioned repairs are "getting expensive" but didn\'t quantify.',
+    'Discovery call. They talked freely about the fleet. Didn\'t bring up the accountant or cash flow — you didn\'t push.',
+  ],
+  discovery_full:[
+    'Full picture. Fleet makeup, repair history, cash flow seasonality, who the accountant is, and when they want to move. This is everything you need for a proposal.',
+    'Deep discovery. They pulled up their repair log on the call. $31K last year on a 9-truck fleet. Accountant is involved and already thinks leasing makes sense.',
+    'Excellent discovery call. You asked the right questions and they answered all of them. Clear path to proposal.',
+  ],
+  discovery_blocked:[
+    'They opened up on the trucks but shut down on financials. "That\'s private." You know the fleet — you don\'t know if they can qualify.',
+    'Owner wasn\'t forthcoming. You got surface info only. Not enough to build a real proposal.',
+    'Discovery call ended early. They had an emergency. You got partial info — need a follow-up.',
+  ],
+
+  // Objections — revealed during or after discovery
+  objection_ownership:'"I like to own my assets. Always have."',
+  objection_cpa_slow:'"My accountant is reviewing it. He\'s slow." — Translation: he might kill this.',
+  objection_spouse:'"I need to talk to my wife about anything over $30K."',
+  objection_mileage:'"What happens if we go over the mileage?"',
+  objection_residual:'"What\'s the balloon payment at the end?" — They don\'t understand TRAC.',
+  objection_rates:'"Interest rates seem high right now."',
+  objection_competition:'"The dealer gave me a lower payment."',
+  objection_cash:'"We\'d rather just pay cash."',
+  objection_q3:'"Let\'s revisit in Q3."',
+  objection_busy:'"Summer is our busy season. Not a good time to change anything."',
+  objection_bad_history:'"Last time we leased a truck it was a nightmare at turn-in."',
+  objection_credit:'"We\'ve had some cash flow issues — not sure we\'d qualify."',
+
+  // Ghosting patterns
+  ghost_after_proposal:[
+    'Proposal sent 6 days ago. Two follow-up attempts. No response.',
+    'They went quiet after what seemed like a promising proposal call.',
+    'Read receipt shows the proposal email was opened 3 times. No reply.',
+    'Called twice, texted once. Nothing since the proposal went out.',
+  ],
+  ghost_mid_discovery:[
+    'Was supposed to send their repair records. Never did.',
+    'Scheduled a follow-up Zoom. No-showed.',
+    'Said they\'d call back with their accountant\'s contact. Radio silence.',
+  ],
+
+  // Doc friction
+  docs_slow_owner:'Owner said he\'d fill out the credit app "this week." It\'s been 8 days.',
+  docs_missing_financials:'They sent the credit app but forgot business financials. Waiting.',
+  docs_insurance_delay:'Insurance cert is coming from their broker. Broker is backed up.',
+  docs_accountant_holdups:'CPA wants to review the full lease agreement before releasing financials.',
+  docs_wrong_entity:'They sent personal tax returns instead of business. Need to resend.',
+
+  // June-specific market context
+  june_context:[
+    'HVAC season is peaking. Austin hit 98°F today. Every HVAC company is maxed out — trucks breaking down means missed calls and lost revenue. Pain is highest right now.',
+    'New developments along 1431 in Cedar Park and 620 in Leander. Service businesses are moving in fast. Territory is worth driving this week.',
+    'Commercial insurance renewals are hitting businesses in June/July. Vehicles over 150K miles are seeing rate increases of 10-18%. New angle to open with.',
+    'A large roofing company in Buda just posted for 6 crew positions — that means they\'re scaling and need trucks. Worth a call today.',
+    'Home service businesses across Austin are in their busiest 90 days. They\'re too busy to deal with paperwork — but the pain is real. Plant seeds now, close in August.',
+    'Storm system hit the Hill Country last week. Roofing companies in Dripping Springs and Wimberley are slammed. High urgency but high noise — be specific and fast.',
+    'June is when landscaping HOA contracts get renewed. Companies that just signed new contracts need fleet ASAP.',
+    'Commercial real estate in Hutto and Manor — new industrial tenants mean new service businesses setting up. Fresh territory.',
+    'TWIC is showing heavy commercial vehicle activity on 183A and Parmer this week. Good corridor for territory drives.',
+    'End of Q2 — some businesses are looking at their YTD numbers and realizing repair costs are out of control. Good time to show TCO math.',
+  ],
+};
+
+
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MF=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+// ─── HELPERS ────────────────────────────────────────────────
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function clamp(v,lo=0,hi=100){return Math.max(lo,Math.min(hi,v))}
+function fmt(n){return '$'+Math.round(n).toLocaleString()}
+function dayName(d){return DOW[(d-1)%7]}
+function isWknd(d){const i=(d-1)%7;return i===5||i===6}
+function simDOM(d){return((d-1)%30)+1}
+
+
+// ─── ACTION POINT COSTS ──────────────────────────────────────
+const AP_COSTS = {
+  drive_territory:3, cold_call:2, live_call:1, discovery:2,
+  build_proposal:2, present_proposal:2, cpa_call:2, doc_chase:1,
+  create_content:2, study_product:2, networking:2, cpa_lunch:2,
+  admin:0, text_followup:1, close_attempt:1, send_revised:2,
+  linkedin:1,
+};
+const AP_PER_DAY = 15;
+const AP_WEEKEND  = 5;
+
+// ─── PIPELINE STAGES (strict order) ──────────────────────────
+const STAGE_ORDER = [
+  'prospect','first_touch','connected','discovery_scheduled',
+  'discovery_done','qualified','proposal_building','proposal_ready',
+  'proposal_presented','objection_handling','negotiation',
+  'verbal_yes','docs_requested','docs_received',
+  'underwriting','approved','funded','closed_won',
+  'closed_lost','dormant'
+];
+
+const STAGE_LABEL = {
+  prospect:'Prospect', first_touch:'First Touch', connected:'Connected',
+  discovery_scheduled:'Discovery Scheduled', discovery_done:'Discovery Done',
+  qualified:'Qualified', proposal_building:'Building Proposal', proposal_ready:'Proposal Ready',
+  proposal_presented:'Proposal Presented', objection_handling:'Objection Handling',
+  negotiation:'Negotiation', verbal_yes:'Verbal Yes ⚠️ NOT CLOSED',
+  docs_requested:'Docs Outstanding ⚠️', docs_received:'Docs Received',
+  underwriting:'Underwriting', approved:'Approved ✓',
+  funded:'FUNDED — CLOSED WON 🎉', closed_won:'Closed Won',
+  closed_lost:'Closed Lost', dormant:'Dormant'
+,
+  verbal_yes:'Verbal Yes ⚠️ NOT CLOSED',
+  docs_requested:'Docs Outstanding ⚠️',
+  docs_received:'Docs Received',
+  underwriting:'Underwriting',
+  approved:'Approved ✓',
+  funded:'FUNDED — CLOSED WON',
+  proposal_building:'Building Proposal',
+  proposal_ready:'Proposal Ready'
+};
+
+const STAGE_COL = {
+  prospect:'#aeaeb2', first_touch:'#6e6e73', connected:'#0a66c2',
+  discovery_scheduled:'#0a66c2', discovery_done:'#0a66c2',
+  qualified:'#b45309', proposal_building:'#b45309', proposal_ready:'#b45309',
+  proposal_presented:'#7c3aed', objection_handling:'#7c3aed', negotiation:'#7c3aed',
+  verbal_yes:'#e67e22', docs_requested:'#e74c3c', docs_received:'#27ae60',
+  underwriting:'#27ae60', approved:'#27ae60',
+  funded:'#1a7f4b', closed_won:'#1a7f4b', closed_lost:'#d93025', dormant:'#aeaeb2'
+,
+  verbal_yes:'#e67e22',
+  docs_requested:'#e74c3c',
+  docs_received:'#27ae60',
+  underwriting:'#27ae60',
+  approved:'#27ae60',
+  funded:'#1a7f4b',
+  closed_won:'#1a7f4b',
+  closed_lost:'#d93025',
+  dormant:'#aeaeb2',
+  proposal_building:'#b45309',
+  proposal_ready:'#b45309'
+};
+
+// Stage must be reached in order — no skipping forward more than allowed
+function canAdvanceTo(current, target){
+  const ci=STAGE_ORDER.indexOf(current), ti=STAGE_ORDER.indexOf(target);
+  return ti > ci && ti <= ci+2; // max jump of 2 stages
+}
+
+// ─── VALID ACTIONS PER STAGE ─────────────────────────────────
+const STAGE_ACTIONS = {
+  first_touch:       ['live_call','text_followup','admin'],
+  connected:         ['live_call','text_followup','discovery','admin'],
+  discovery_scheduled:['live_call','text_followup','discovery','admin'],
+  discovery_done:    ['live_call','build_proposal','text_followup','admin'],
+  qualified:         ['live_call','build_proposal','text_followup','admin'],
+  proposal_building: ['build_proposal','admin'],
+  proposal_ready:    ['live_call','present_proposal','text_followup','admin'],
+  negotiation:       ['close_attempt','send_revised','live_call','text_followup','cpa_call','admin'],
+  proposal_presented:['close_attempt','live_call','text_followup','cpa_call','present_proposal','admin'],
+  objection_handling:['close_attempt','send_revised','live_call','text_followup','cpa_call','admin'],
+  verbal_yes:        ['live_call','doc_chase','text_followup','admin'],
+  docs_requested:    ['live_call','doc_chase','text_followup','cpa_call','admin'],
+  docs_received:     ['live_call','admin'],
+  underwriting:      ['admin','live_call'],
+  approved:          ['live_call','admin'],
+  dormant:           ['live_call','text_followup','admin'],
+};
+
+const ACTION_LABELS = {
+  live_call:'Call them now',
+  text_followup:'Text or email follow-up',
+  discovery:'Run discovery call',
+  build_proposal:'Build the proposal',
+  present_proposal:'Present proposal on Zoom or in person',
+  cpa_call:'Get their CPA on the call',
+  doc_chase:'Chase outstanding documents',
+  admin:'Log note / set reminder',
+  close_attempt:'Ask for the business',
+  send_revised:'Send revised proposal',
+};
+
+// ─── GAME STATE ──────────────────────────────────────────────
+let G = {
+  day:1, month:5,
+  isWeekend:false, weekendUsed:false,
+  ap:AP_PER_DAY, apMax:AP_PER_DAY,
+
+  conf:28, ener:90, disc:75, mom:5, burnout:0,
+
+  gp:0, commissionEarned:0, deals:0, veh:0,
+  pendingComm:0, lockedComm:0, commRate:0.33,
+  nextPayday:15,
+
+  draw:3500,
+  expenses:{rent:1400,car:450,food:600,subs:150,other:300},
+  banks:{
+    checking:{label:'Chase Checking',bal:0,type:'checking'},
+    savings:{label:'High-Yield Savings',bal:0,type:'savings'},
+    roth:{label:'Roth IRA',bal:0,type:'roth'},
+    emergency:{label:'Emergency Fund',bal:0,type:'emergency'},
+  },
+  paychecks:[],
+
+  pipe:[],
+  rep:{aw:0,tr:0,pr:15,au:12,so:0,rf:0},
+  today:[], monthly:[], mgp:0, mdeals:0,
+  productKnowledge:{trac:20,asc842:5,sec179:5,depreciation:8,tco:10,residual:10,mileage:15,earlyTerm:5,upfit:5,insurance:8,credit:10,cpaHandling:5,ownerObj:10,discovery:12,proposal:10,negotiation:8},
+
+  // Active engage view
+  activeProspectId: null,
+};
+
+const DEAL_TEMPLATES = [
+  {veh:2,gp:1400,term:'24',type:'TRAC Lease'},{veh:3,gp:1150,term:'36',type:'TRAC Lease'},
+  {veh:4,gp:1280,term:'36',type:'TRAC Lease'},{veh:4,gp:1350,term:'48',type:'TRAC Lease'},
+  {veh:5,gp:1200,term:'48',type:'Commercial Lease'},{veh:5,gp:1100,term:'36',type:'TRAC Lease'},
+  {veh:6,gp:1050,term:'48',type:'TRAC Lease'},{veh:6,gp:1300,term:'36',type:'TRAC Lease'},
+  {veh:7,gp:1250,term:'36',type:'TRAC Lease'},{veh:8,gp:1100,term:'60',type:'Fleet Lease'},
+];
+
+// ─── INIT ────────────────────────────────────────────────────
+function startGame(){
+  G.draw   = parseFloat(document.getElementById('e-draw').value)||3500;
+  G.expenses = {
+    rent: parseFloat(document.getElementById('e-rent').value)||1400,
+    car:  parseFloat(document.getElementById('e-car').value)||450,
+    food: parseFloat(document.getElementById('e-food').value)||600,
+    subs: parseFloat(document.getElementById('e-subs').value)||150,
+    other:parseFloat(document.getElementById('e-other').value)||300,
+  };
+  const pc=calcPC(G.draw/2,0);
+  G.banks.checking.bal=Math.round(pc.net);
+
+  Object.entries(PK_DEFAULTS).forEach(([k,v])=>{if(G.productKnowledge[k]===undefined)G.productKnowledge[k]=v;});
+  G.pipe = COMPANIES.map(c=>({
+    ...c, disc:null, stage:'prospect', trust:0, touches:0, irritation:0,
+    lastContact:null, nextFollowUp:null,
+    locked:false, lockedReason:null, lockedUntil:null,
+    docStatus:null, docOverdueDays:0,
+    history:[], // conversation history
+    knownObjections:[], knownPain:null, knownDecisionMakers:[],
+    dealHealth:100, closedDay:null, proposalBuilt:false,
+    discoveryDone:false, lastActionDay:null, note:'',
+  }));
+
+  document.getElementById('intro').style.display='none';
+  document.getElementById('game').style.display='flex';
+  G.isWeekend=isWknd(G.day);
+  updateUI();
+  showModal('June 1 — Day One',`
+    <div style="font-size:13px;line-height:1.8">
+      <p style="margin-bottom:8px">98°F in Austin. HVAC season is peaked. Trucks are breaking down. You have zero pipeline and zero reputation.</p>
+      <div style="background:#f0faf4;border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px">
+        <b style="color:#1a7f4b">Week 1 priorities:</b><br>
+        1. Drive territory every day — shoot 20-30 plates with TWIC<br>
+        2. Call every plate same day or next morning<br>
+        3. Get to discovery on 2-3 calls<br>
+        4. Do NOT propose anything. Do NOT ask for business. Just listen.
+      </div>
+      <div style="background:#fff8e1;border-radius:8px;padding:10px;font-size:11px;color:#b45309">
+        <b>Month 1 benchmark:</b> 80-150 touches · 20-40 conversations · 8-15 discoveries · 3-6 proposals · 0-2 closes
+      </div>
+    </div>
+    <div class="brow"><button class="btn-primary" onclick="closeModal()">Start Day 1 →</button></div>
+  `);
+}
+
+// ─── PAYCHECK MATH ───────────────────────────────────────────
+function calcPC(hd,comm){
+  const g=hd+comm,f=g*0.22,ss=g*0.062,m=g*0.0145;
+  return{gross:g,fed:f,ss,mcare:m,net:g-f-ss-m};
+}
+function totalExp(){return Object.values(G.expenses).reduce((s,v)=>s+v,0)}
+function addComm(gp){
+  const c=gp*G.commRate;
+  if(simDOM(G.day)<=5)G.lockedComm+=c;else G.pendingComm+=c;
+  G.commissionEarned+=c; return c;
+}
+function checkCutoff(){
+  if(simDOM(G.day)===5&&G.pendingComm>0){
+    G.lockedComm+=G.pendingComm;
+    addFeed('📋 Commission cutoff — '+fmt(G.pendingComm)+' locked for next payday');
+    G.pendingComm=0;
+  }
+}
+
+// ─── AP SYSTEM ───────────────────────────────────────────────
+function useAP(cost){
+  if(G.ap<cost){
+    showModal('Out of action points',
+      '<div class="rb rb-n">Not enough AP for this action today (need '+cost+', have '+G.ap+').</div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">End day or choose cheaper action</button></div>');
+    return false;
+  }
+  G.ap-=cost; G.today.push(cost); updateAPBar(); return true;
+}
+function updateAPBar(){
+  const el=document.getElementById('ap-bar');
+  const vEl=document.getElementById('ap-val');
+  if(el) el.style.width=Math.round((G.ap/G.apMax)*100)+'%';
+  if(vEl) vEl.textContent=G.ap+'/'+G.apMax+' AP';
+}
+
+// ─── UPDATE UI ───────────────────────────────────────────────
+function updateUI(){
+  G.isWeekend=isWknd(G.day);
+  G.apMax=G.isWeekend?AP_WEEKEND:AP_PER_DAY;
+
+  // Topbar
+  document.getElementById('tb-day').textContent=G.day;
+  document.getElementById('tb-mo').textContent=MONTHS[G.month];
+  const cb=G.banks.checking.bal;
+  const cashEl=document.getElementById('tb-cash');
+  if(cashEl){cashEl.textContent=fmt(cb);cashEl.style.color=cb<500?'#d93025':cb<1500?'#b45309':'#1a7f4b';}
+  const npEl=document.getElementById('tb-nextpay');
+  if(npEl)npEl.textContent='Day '+G.nextPayday;
+  document.getElementById('tb-gp').textContent=fmt(G.gp);
+  const activeCount=G.pipe.filter(p=>!['prospect','closed_won','closed_lost'].includes(p.stage)).length;
+  document.getElementById('tb-pipe').textContent=activeCount;
+  document.getElementById('tb-deals').textContent=G.deals;
+
+  // Stat bars
+  ['c','e','d','m','b'].forEach((k,i)=>{
+    const keys=['conf','ener','disc','mom','burnout'];
+    const el=document.getElementById('ps-'+k),vEl=document.getElementById('pv-'+k);
+    if(el)el.style.width=clamp(G[keys[i]])+'%';
+    if(vEl)vEl.textContent=Math.round(clamp(G[keys[i]]));
+  });
+
+  // AP bar
+  updateAPBar();
+
+  // Day info
+  const dow=dayName(G.day),wk=Math.ceil(G.day/7);
+  const dt=document.getElementById('day-title'),ds=document.getElementById('day-sub');
+  if(dt)dt.textContent=dow+' — Week '+wk+', '+MF[G.month];
+  if(ds)ds.textContent=G.isWeekend
+    ? dow+' — Weekend. '+G.ap+' AP remaining.'
+    : G.ap+' Action Points remaining today. ('+(G.apMax-G.ap)+' used)';
+
+  // Weekend/weekday panels
+  const wp=document.getElementById('wknd-panel'),wd=document.getElementById('wkdy-panel');
+  if(wp)wp.style.display=G.isWeekend?'block':'none';
+  if(wd)wd.style.display=G.isWeekend?'none':'block';
+  const wdn=document.getElementById('wknd-day-name');
+  if(wdn)wdn.textContent=dow;
+
+  // Burnout alert
+  const ba=document.getElementById('burnout-alert');
+  if(ba)ba.style.display=G.burnout>=65?'block':'none';
+
+  // Nav badges
+  const fueDue=G.pipe.filter(p=>p.nextFollowUp&&p.nextFollowUp<=G.day&&
+    !['closed_won','closed_lost','prospect'].includes(p.stage)&&!p.locked).length;
+  const nbE=document.getElementById('nb-e');if(nbE)nbE.textContent=activeCount;
+  const nbF=document.getElementById('nb-f');if(nbF)nbF.textContent=fueDue;
+  const nbPay=document.getElementById('nb-pay');
+  if(nbPay)nbPay.style.display=(G.nextPayday-G.day<=2)?'inline-block':'none';
+
+  // Dashboard
+  const dgp=document.getElementById('d-gp');if(dgp)dgp.textContent=fmt(G.gp);
+  const dc=document.getElementById('d-comm');if(dc)dc.textContent=fmt(G.commissionEarned);
+  const dd=document.getElementById('d-deals');if(dd)dd.textContent=G.deals;
+  const dv=document.getElementById('d-veh');if(dv)dv.textContent=G.veh;
+  const nw=Object.values(G.banks).reduce((s,b)=>s+b.bal,0);
+  const dn=document.getElementById('d-networth');if(dn)dn.textContent=fmt(nw);
+
+  // Context card
+  const ctxCard=document.getElementById('ctx-card');
+  if(ctxCard)ctxCard.style.display=(!G.isWeekend)?'block':'none';
+  const ctxEl=document.getElementById('ctx-text');
+  if(ctxEl&&!G.isWeekend&&!ctxEl.dataset.set){
+    ctxEl.textContent=pick(JUNE_CONTEXT);
+    ctxEl.dataset.set='1';
+  }
+
+  // Academy career banner refresh
+  const _acl=document.getElementById('academy-level');
+  const _act=document.getElementById('academy-tip');
+  const _apk=document.getElementById('academy-pk-bars');
+  if(_acl&&G.productKnowledge&&typeof getCareerLevel==='function'){
+    const _car=getCareerLevel();
+    _acl.textContent=_car.level;_acl.style.color=_car.color;
+    if(_act)_act.textContent=_car.tip;
+    if(_apk)_apk.innerHTML=Object.entries(G.productKnowledge).map(([k,v])=>{
+      const c=v>=70?'#1a7f4b':v>=40?'#b45309':'#d93025';
+      return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px">'+
+        '<span style="width:100px;color:#6e6e73">'+k+'</span>'+
+        '<div style="flex:1;height:5px;background:#e5e5ea;border-radius:3px;overflow:hidden">'+
+        '<div style="height:100%;width:'+Math.min(100,Math.round(v))+'%;background:'+c+';border-radius:3px;transition:width .4s"></div></div>'+
+        '<span style="width:26px;text-align:right;color:'+c+';font-weight:600;font-size:10px">'+Math.round(v)+'</span></div>';
+    }).join('');
+  }
+  renderBankCards();renderPayPreview();
+  renderEngagePanel();renderCRM();renderFollowups();renderDashboard();
+}
+
+// ─── NAV ─────────────────────────────────────────────────────
+function switchNav(el){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  el.classList.add('on');
+  const p=el.dataset.panel;
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+  document.getElementById('panel-'+p).classList.add('on');
+  if(p==='engage')renderEngagePanel();
+}
+function switchNavById(id){
+  const el=document.querySelector('[data-panel="'+id+'"]');
+  if(el)switchNav(el);
+}
+
+// ─── DAILY ACTIONS ───────────────────────────────────────────
+const JUNE_CONTEXT = [
+  'HVAC season peaked. Austin hit 98°F. Every breakdown means missed calls and lost revenue — pain is loudest right now.',
+  'New developments along 1431 Cedar Park and 620 Leander. Service businesses moving in fast. Drive those corridors.',
+  'Commercial insurance renewals hitting businesses in June/July. Vehicles over 150K miles seeing 10-18% rate increases. New angle.',
+  'End of Q2 — some businesses are looking at YTD numbers and repair costs are out of control. Good time for TCO math.',
+  'Landscaping HOA contracts renewing in June. Companies that just signed new contracts need fleet ASAP.',
+  'Storm system hit Hill Country last week. Roofing companies slammed. High urgency, high noise — be specific.',
+  'TWIC showing heavy commercial vehicle activity on 183A and Parmer this week. Good corridors.',
+  'Pest control in peak season. Every breakdown means missed routes and lost accounts.',
+];
+
+function act(type){
+  if(G.isWeekend){
+    showModal('Weekend','<div class="rb rb-n">Use the weekend options instead.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+    return;
+  }
+  const cost=AP_COSTS[type]||1;
+  if(!useAP(cost))return;
+  const apFraction=(G.apMax-G.ap)/G.apMax;
+  G.burnout=clamp(G.burnout+(apFraction>0.8?rnd(1,2):0.3));
+  G.ener=clamp(G.ener-rnd(1,3));
+
+  const fns={
+    drive_territory:doTerritoryDrive,
+    cold_call:doColdCallBlock,
+    study_product:doStudyProduct,
+    create_content:doCreateContent,
+    networking:doNetworking,
+    cpa_lunch:doCPALunch,
+    linkedin:doLinkedIn,
+  };
+  if(fns[type])fns[type]();
+  updateUI();
+}
+
+
+// ── TWIC prospect generator — runs every territory drive ─────────────────────
+const TWIC_INDUSTRIES = [
+  {ind:'HVAC',        emoji:'❄️', veh:'Transit cargo vans'},
+  {ind:'Plumbing',    emoji:'🔧', veh:'Chevy cargo vans'},
+  {ind:'Electrical',  emoji:'⚡', veh:'Ford Transit upfitted'},
+  {ind:'Roofing',     emoji:'🏠', veh:'F-250 crew cabs'},
+  {ind:'Landscaping', emoji:'🌿', veh:'F-250 and trailers'},
+  {ind:'Pest Control',emoji:'🐛', veh:'Transit Connect'},
+  {ind:'Construction',emoji:'🏗️', veh:'F-350 Super Duty'},
+  {ind:'Restoration', emoji:'💧', veh:'Transit cargo vans'},
+  {ind:'Fire & Safety',emoji:'🔥',veh:'Ford Transit upfitted'},
+];
+const TWIC_PREFIXES = ['Austin','Texas','Lone Star','Hill Country','Capitol','Cedar Park',
+  'Round Rock','Pflugerville','Leander','Georgetown','Hutto','Manor','Buda','Kyle','Dripping Springs'];
+const TWIC_SUFFIXES = {
+  'HVAC':['HVAC','Air & Heat','Cooling','Climate Control','Mechanical'],
+  'Plumbing':['Plumbing','Rooter','Pipe & Drain','Water Works'],
+  'Electrical':['Electric','Electrical','Power','Voltage'],
+  'Roofing':['Roofing','Roof & Repair','Storm Pros','Exteriors'],
+  'Landscaping':['Landscaping','Lawn Care','Property Services','Grounds'],
+  'Pest Control':['Pest Control','Exterminators','Bug Guard','Shield Pest'],
+  'Construction':['Construction','Contractors','Builders','Build Group'],
+  'Restoration':['Restoration','Remediation','Recovery Services'],
+  'Fire & Safety':['Fire & Safety','Fire Protection','Safety Systems'],
+};
+const TWIC_PAINS = [
+  'Repairs are increasing every quarter — owner writing checks personally',
+  'Lost a bid because trucks looked unprofessional on arrival',
+  'One truck down 3 weeks — costing them in missed jobs',
+  'Fleet manager flagged escalating maintenance costs to owner',
+  'Insurance flagged vehicles over 150K miles at renewal — rate increase incoming',
+  'Hiring is harder — techs see old vans and turn down offers',
+  'Expanding routes — current fleet not keeping pace',
+  'Two trucks out simultaneously last month — nearly lost a contract',
+  'Owner just got a $4,200 repair bill on a truck he thought was fine',
+  'Competitor showing up with newer trucks — losing bids on appearance alone',
+];
+
+let _twicIdCounter = 1000;
+
+function generateTWICProspect(corridor){
+  const ind  = pick(TWIC_INDUSTRIES);
+  const prefix = pick(TWIC_PREFIXES);
+  const suffix = pick(TWIC_SUFFIXES[ind.ind]||['Services']);
+  const name = prefix + ' ' + suffix;
+  if(G.pipe.find(p=>p.name===name)) return null; // skip dupes
+  const fleet = rnd(3,18);
+  const age   = pick(['5-8 yrs','6-9 yrs','7-10 yrs','8+ yrs','5-7 yrs']);
+  const id    = 'twic_'+(_twicIdCounter++);
+  return {
+    id, name, industry:ind.ind, emoji:ind.emoji,
+    loc: corridor.split(' and ')[0] || 'Austin area',
+    fleetSize:fleet, vehicleTypes:ind.veh, approxAge:age,
+    ownerName:'Unknown — TWIC plate only',
+    _disc:null, disc:null,
+    stage:'first_touch', trust:0, touches:0, irritation:0,
+    lastContact:null, nextFollowUp:null,
+    locked:false, lockedReason:null, lockedUntil:null,
+    docStatus:null, docOverdueDays:0,
+    history:[{day:G.day, event:'Plate scanned on '+corridor+' via TWIC'}],
+    knownObjections:[], knownPain:null, knownDecisionMakers:[],
+    dealHealth:100, closedDay:null, proposalBuilt:false,
+    discoveryDone:false, lastActionDay:null,
+    note:'TWIC scan — '+corridor+' — not yet called',
+    pain: pick(TWIC_PAINS),
+  };
+}
+
+function doTerritoryDrive(){
+  const plates     = rnd(18,34);
+  const actionable = rnd(Math.floor(plates*0.25), Math.floor(plates*0.40));
+  const corridor   = pick([
+    '183 and Parmer in Cedar Park','620 and RR 1431 in Leander',
+    'Pflugerville and Manor on 290','Round Rock industrial parks off 35',
+    'Buda and Kyle on 967','Georgetown and Hutto on 130',
+    'South Austin on Slaughter','SH-130 corridor in Hutto',
+    'Sam Bass Road in Round Rock','1431 between Cedar Park and Leander',
+  ]);
+
+  const added = [];
+
+  // Phase 1: move named prospects (up to 40% of actionable)
+  const namedAvail = G.pipe.filter(p=>p.stage==='prospect'&&p._disc);
+  for(let i=namedAvail.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [namedAvail[i],namedAvail[j]]=[namedAvail[j],namedAvail[i]];
+  }
+  const namedCount = Math.min(Math.floor(actionable*0.4), namedAvail.length);
+  for(let i=0;i<namedCount;i++){
+    namedAvail[i].stage='first_touch';
+    namedAvail[i].note='TWIC scan on '+corridor+' — not yet called';
+    namedAvail[i].history.push({day:G.day, event:'Plate scanned on '+corridor});
+    added.push(namedAvail[i]);
+  }
+
+  // Phase 2: always generate fresh TWIC prospects to fill remaining slots
+  const needed = actionable - namedCount;
+  let attempts = 0;
+  while(added.length < actionable && attempts < 40){
+    const p = generateTWICProspect(corridor);
+    if(p){ G.pipe.push(p); added.push(p); }
+    attempts++;
+  }
+
+  G.disc  = clamp(G.disc+1);
+  G.rep.aw = clamp(G.rep.aw+1);
+  // Force UI sync before showing modal so engage tab is populated
+  updateUI();
+  addFeed('🚗 Territory: '+plates+' plates on '+corridor+' — '+added.length+' queued for calls');
+
+  showModal('Territory Drive — '+corridor,
+    '<div class="rb rb-s" style="margin-bottom:8px">'+
+    '<div class="rbt">'+plates+' plates scanned — '+added.length+' businesses in your call queue</div>'+
+    'TWIC returned company profiles on '+added.length+' target businesses. They are now in your Engage tab.'+
+    '<div class="insight">Your opener: "I was driving '+corridor+' yesterday and your vehicle came up in our fleet system. We work with '+
+    (added[0]?added[0].industry:'trade')+' companies across Austin on fleet programs." — That call is warm, not cold.</div></div>'+
+    '<div style="font-size:12px;color:#6e6e73;margin-bottom:10px">'+
+    '<b>'+added.length+' added to your call queue:</b><br>'+
+    added.slice(0,6).map(p=>'• '+p.name+' ('+p.industry+', ~'+p.fleetSize+' vehicles)').join('<br>')+
+    (added.length>6?'<br>• ...and '+(added.length-6)+' more':'')+
+    '</div>'+
+    '<div class="brow">'+
+    '<button class="btn-primary" onclick="closeModal();switchNavById(\'engage\');setEngageFilter(\'first_touch\')">Call them now →</button>'+
+    '<button onclick="closeModal()">Continue daily actions</button>'+
+    '</div>'
+  );
+}
+
+function doColdCallBlock(){
+  const dials = rnd(18,26);
+  // Cold calls work on BOTH first_touch AND generate new TWIC prospects directly
+  const firstTouchers = G.pipe.filter(p=>p.stage==='first_touch');
+  let connected = 0;
+  const results = [];
+
+  // Work existing first_touch prospects
+  firstTouchers.slice(0,Math.min(rnd(2,5),firstTouchers.length)).forEach(p=>{
+    p.touches++; p.lastContact=G.day;
+    const roll=Math.random();
+    if(roll<0.25){
+      p.stage='connected'; p.trust=clamp(p.trust+1);
+      p.nextFollowUp=G.day+rnd(1,3);
+      const r=pick(RESPONSES.first_touch_pain_signal.concat(RESPONSES.first_touch_curious));
+      p.note=r.substring(0,60);
+      p.history.push({day:G.day,event:'Connected — cold call: '+r.substring(0,50)});
+      results.push({p,outcome:'connected',msg:r});
+      connected++;
+    } else if(roll<0.55){
+      const r=pick(RESPONSES.first_touch_curious);
+      p.note=r.substring(0,60);
+      p.history.push({day:G.day,event:'Curious response: '+r.substring(0,50)});
+      results.push({p,outcome:'curious',msg:r});
+    } else {
+      const r=pick((RESPONSES.first_touch_voicemail||[]).concat(RESPONSES.first_touch_gatekeeper||['Voicemail — no answer.']));
+      p.note=r; p.history.push({day:G.day,event:'No connect: '+r});
+      results.push({p,outcome:'miss',msg:r});
+    }
+  });
+
+  // Also: cold calls always surface 1-3 new TWIC prospects (you called from your plate list)
+  const newFromCall = rnd(1,3);
+  const corridor = pick(['183 Cedar Park','Round Rock industrial','Pflugerville 290 corridor','Georgetown 35','Buda Kyle area']);
+  const newProspects = [];
+  for(let i=0;i<newFromCall;i++){
+    const p=generateTWICProspect(corridor);
+    if(p){
+      G.pipe.push(p);
+      p.history.push({day:G.day,event:'Reached via cold call block'});
+      newProspects.push(p);
+    }
+  }
+
+  G.conf = clamp(G.conf+rnd(-1,3));
+  G.rep.aw = clamp(G.rep.aw+1);
+  addFeed('📞 Call block: '+dials+' dials, '+results.length+' conversations, '+connected+' connected, '+newProspects.length+' new plates called');
+
+  showModal('Cold Call Block — '+dials+' Dials',
+    '<div class="rb rb-s" style="margin-bottom:8px">'+
+    '<div class="rbt">'+results.length+' conversations · '+connected+' connected · '+newProspects.length+' new from plate list</div>'+
+    (results.length?
+      results.map(r=>
+        '<div style="padding:5px 0;border-bottom:1px solid #e5e5ea;font-size:12px">'+
+        '<span style="font-weight:600">'+r.p.name+'</span> '+
+        '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:'+(r.outcome==='connected'?'#d1fae5':r.outcome==='curious'?'#fef3c7':'#f3f4f6')+'">'+
+        (r.outcome==='connected'?'CONNECTED':r.outcome==='curious'?'CURIOUS':'voicemail')+'</span><br>'+
+        '<span style="font-size:11px;color:#6e6e73">'+r.msg.substring(0,80)+'</span></div>'
+      ).join('')+
+      (newProspects.length?
+        '<div style="margin-top:6px;padding:6px 0;font-size:11px;color:#6e6e73;border-top:1px solid #e5e5ea">'+
+        '<b>New from plate list:</b> '+newProspects.map(p=>p.name).join(', ')+'</div>':''
+      )
+    :'<div style="color:#aeaeb2;font-size:12px">All voicemail today. Standard. Your TWIC plate list is your best follow-up source.</div>')+
+    '<div class="insight">10-15% conversation rate is realistic. Consistency is what builds the pipeline.</div></div>'+
+    '<div class="brow">'+
+    (connected||newProspects.length?
+      '<button class="btn-primary" onclick="closeModal();switchNavById(\'engage\')">Engage them →</button>':
+      '<button class="btn-primary" onclick="closeModal()">Continue</button>'
+    )+
+    '</div>'
+  );
+}
+
+function setEngageFilter(stage){
+  G._engageFilter=stage;
+  renderEngagePanel();
+}
+
+// ════════════════════════════════════════════════════════════
+// FLEET ACADEMY — FULL TRAINING SYSTEM v2
+// 16 modules | Interactive moments | Career progression
+// ════════════════════════════════════════════════════════════
+
+// ── Extended knowledge categories ────────────────────────────
+// Injected into G.productKnowledge on init
+const PK_DEFAULTS = {
+  trac:        20,  // TRAC lease fundamentals
+  asc842:       5,  // ASC 842 lease accounting
+  sec179:       5,  // Section 179 tax deduction
+  depreciation: 8,  // Bonus depreciation / MACRS
+  tco:         10,  // TCO / fleet economics
+  residual:    10,  // Residual risk & TRAC end-of-term
+  mileage:     15,  // Mileage caps / overage risk
+  earlyTerm:    5,  // Early termination / exit structures
+  upfit:        5,  // Upfit financing
+  insurance:    8,  // Insurance / registration / titling
+  credit:      10,  // Credit / underwriting / docs
+  cpaHandling:  5,  // CPA objection handling
+  ownerObj:    10,  // Owner objection handling
+  discovery:   12,  // Consultative discovery
+  proposal:    10,  // Proposal building
+  negotiation:  8,  // Negotiation / closing
+};
+
+// ── Career milestones based on total knowledge ────────────────
+function getCareerLevel(){
+  const total = Object.values(G.productKnowledge).reduce((s,v)=>s+v,0);
+  const max   = Object.keys(PK_DEFAULTS).length * 100;
+  const pct   = total / max;
+  if(pct < 0.15) return {level:'Green Rookie',     color:'#aeaeb2', tip:'You are just getting started. Focus on TRAC basics and discovery before anything else.'};
+  if(pct < 0.30) return {level:'Learning Rep',     color:'#6e6e73', tip:'Enough to have good first conversations. Weak with CPAs — avoid CPA calls until ASC 842 is above 40.'};
+  if(pct < 0.45) return {level:'Developing Rep',   color:'#b45309', tip:'Handling most owner objections. CPA conversations are shaky but manageable. Build TCO and negotiation now.'};
+  if(pct < 0.60) return {level:'Competent Rep',    color:'#0a66c2', tip:'Strong discovery and proposal skills. CPAs no longer a threat. Focus on closing and negotiation.'};
+  if(pct < 0.75) return {level:'Strong Rep',       color:'#7c3aed', tip:'Dangerous in the field. Handle complex objections confidently. Focus on execution and pipeline discipline.'};
+  return              {level:'Expert Rep',          color:'#1a7f4b', tip:'You know this product better than most reps with 5 years experience. CPAs respect you. Owners trust you.'};
+}
+
+// ── 16 Training modules ───────────────────────────────────────
+const ACADEMY_MODULES = [
+  {
+    id:'trac_fundamentals',
+    label:'TRAC Lease Fundamentals',
+    icon:'📋',
+    apCost:2,
+    desc:'How a TRAC (Terminal Rental Adjustment Clause) lease works. Residual setting, end-of-term options, why it is not a balloon payment.',
+    gains:{trac:12, residual:5, mileage:3},
+    insight:'The TRAC residual is the single most misunderstood concept in fleet leasing. Own this explanation and you remove the biggest CPA objection before it starts.',
+    quizChance:0.4,
+    quiz:{
+      q:'Owner asks: "What happens at the end of the lease? Do I owe a big balloon payment?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'The TRAC structure sets a residual — an agreed vehicle value at lease end. If the truck sells for more than that, you get money back. If less, you pay the difference. Most commercial trucks hold value well, so this typically goes in your favor.',
+         outcome:'great',coaching:'Perfect. You reframed the risk and gave them the likely upside. This answer closes deals.'},
+        {label:'Partially explain, hedge',
+         text:'There is a residual value at the end, but it depends on the market — could go either way.',
+         outcome:'ok',coaching:'True but weak. Owners hear "could go either way" and worry. Lead with the upside first, then acknowledge the risk.'},
+        {label:'Defer to your manager',
+         text:'That is a great question — let me have my manager call you with the specifics.',
+         outcome:'miss',coaching:'Never defer on TRAC basics. This is your product. Deferring on fundamentals kills trust immediately.'},
+      ],
+    },
+  },
+  {
+    id:'asc842',
+    label:'ASC 842 Lease Accounting',
+    icon:'📊',
+    apCost:2,
+    desc:'How ASC 842 changed operating vs. finance lease classification. Right-of-use assets, off-balance-sheet strategy, what CPAs need to know.',
+    gains:{asc842:15, cpaHandling:6, depreciation:3},
+    insight:'CPAs who flag ASC 842 are doing their job. If you can explain right-of-use asset treatment clearly, you become a resource instead of a threat.',
+    quizChance:0.5,
+    quiz:{
+      q:'CPA asks: "Is this an operating lease or a finance lease under ASC 842? How does it hit their balance sheet?"',
+      type:'cpa',
+      choices:[
+        {label:'Answer confidently',
+         text:'Under ASC 842, a TRAC lease is typically classified as a finance lease. The company records a right-of-use asset and a corresponding lease liability. Depreciation flows through the income statement separately from the interest component of the lease payment.',
+         outcome:'great',coaching:'Excellent. CPA-level answer. You positioned yourself as someone who understands their world — that is rare for a fleet rep and it builds instant credibility.'},
+        {label:'Defer to internal finance team',
+         text:'Great question. I want to make sure you get a precise answer — let me loop in our finance team and get you a written response today.',
+         outcome:'ok',coaching:'Completely professional and acceptable. You avoided a wrong answer and promised follow-through. As long as you actually send it within 24 hours, this is a good move.'},
+        {label:'Answer partially, deflect',
+         text:'It goes on the balance sheet as an asset. The CPA can figure out the specific classification.',
+         outcome:'miss',coaching:'This is the answer that makes CPAs suspicious. Vague + dismissive signals you do not really know. Defer cleanly or answer fully — never both at once.'},
+      ],
+    },
+  },
+  {
+    id:'sec179',
+    label:'Section 179 & Bonus Depreciation',
+    icon:'💰',
+    apCost:2,
+    desc:'How Section 179 applies to leased vs. purchased commercial vehicles. Bonus depreciation phase-out. When ownership wins on taxes vs. leasing.',
+    gains:{sec179:12, depreciation:8, cpaHandling:4},
+    insight:'Section 179 is the most common reason a CPA recommends buying over leasing. Know both scenarios and let the CPA decide — never argue tax strategy with an accountant.',
+    quizChance:0.4,
+    quiz:{
+      q:'CPA says: "If they buy the truck, they can Section 179 the whole thing in year one. Why would they lease?"',
+      type:'cpa',
+      choices:[
+        {label:'Answer confidently',
+         text:'That is a legitimate point. Section 179 gives a strong year-one deduction on a purchase. The lease trades that for consistent monthly deductions and preserved working capital. For a business in a strong cash position, Section 179 might win on taxes. For a growth-stage company, the lease often wins on cash flow. Can we run both scenarios side by side?',
+         outcome:'great',coaching:'This is the right answer. You acknowledged the CPA is correct, positioned the tradeoff honestly, and offered to do the work. That response earns respect.'},
+        {label:'Say leasing is always better for taxes',
+         text:'Actually, leasing typically provides better tax treatment over the full term.',
+         outcome:'miss',coaching:'Wrong and dangerous. Never argue tax strategy with a CPA — especially incorrectly. This loses the deal and your credibility.'},
+        {label:'Defer to internal team',
+         text:'Good point — let me have our finance specialist compare both scenarios and send you a summary.',
+         outcome:'ok',coaching:'Safe. But you missed an opportunity to show competence. The side-by-side offer is a better move here if you know the answer.'},
+      ],
+    },
+  },
+  {
+    id:'tco',
+    label:'TCO / Fleet Economics',
+    icon:'📉',
+    apCost:2,
+    desc:'Total Cost of Ownership modeling. Repair trajectory vs. lease payment. Working capital argument. Downtime cost math. How to make ownership look expensive.',
+    gains:{tco:12, ownerObj:8, proposal:5},
+    insight:'The TCO comparison is your most powerful tool. A truck that costs $700/mo to lease but $1,400/mo in depreciation, repairs, and downtime sells itself — you just have to show the math.',
+    quizChance:0.4,
+    quiz:{
+      q:'Owner says: "I would rather just keep my old trucks. They are paid off."',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'Paid off is a great position. But paid off does not mean free — what are you spending on repairs per truck this year? Most fleets hitting 100K+ miles are seeing $2,000 to $5,000 per unit annually. Add depreciation loss and downtime cost, and that paid-off truck is often more expensive than a lease payment.',
+         outcome:'great',coaching:'Perfect. You did not argue with them — you asked a question that puts the real cost in front of them. The repair bill answer usually sells the lease for you.'},
+        {label:'Tell them leasing is cheaper',
+         text:'Leasing is actually cheaper than owning when you factor in all the costs.',
+         outcome:'ok',coaching:'The conclusion is right but the delivery is weak. Do not tell them — show them. The question about repair costs is 10x more persuasive than the statement.'},
+        {label:'Agree and back off',
+         text:'That makes sense — the trucks being paid off is definitely an advantage.',
+         outcome:'miss',coaching:'You just agreed with the objection and walked away from the deal. Paid off is not free. Always surface the true carrying cost.'},
+      ],
+    },
+  },
+  {
+    id:'residual',
+    label:'Residual Risk & TRAC End-of-Term',
+    icon:'🔁',
+    apCost:2,
+    desc:'How TRAC residuals are set. Market risk exposure. Typical commercial vehicle residual performance. How to position end-of-term risk vs. ownership depreciation loss.',
+    gains:{residual:14, trac:4, cpaHandling:3},
+    insight:'Fleet trucks hold value better than personal vehicles. The TRAC residual is set conservatively. Most TRAC deals at term end result in money back — not a bill. Know the data.',
+    quizChance:0.35,
+    quiz:{
+      q:'Owner asks: "What is my downside at the end of the lease if the truck is worth less than expected?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'If the truck sells for less than the residual we set, you pay the difference — that is your downside. But here is the context: we set residuals conservatively, and commercial fleet trucks typically hold value better than consumer vehicles. In most cases our clients receive a check at end of term, not a bill. We can show you historical residual performance if that helps.',
+         outcome:'great',coaching:'You answered the worst case, then put it in context with actual data. That builds trust. Always answer the hard question directly before softening it.'},
+        {label:'Minimize the risk',
+         text:'The downside is minimal — trucks almost always sell above residual.',
+         outcome:'ok',coaching:'Probably true but you sounds like you are selling, not advising. They will wonder what you are not telling them. The direct answer followed by context lands better.'},
+        {label:'Change the subject',
+         text:'Let us focus on the monthly payment — that is the real comparison.',
+         outcome:'miss',coaching:'Avoiding a direct question is a trust killer. They will spend the rest of the call wondering what you are hiding about the residual.'},
+      ],
+    },
+  },
+  {
+    id:'mileage',
+    label:'Mileage Structures & Overage Risk',
+    icon:'🛣️',
+    apCost:2,
+    desc:'How mileage caps are set. Overage rate structures ($0.05-0.20/mile). Route analysis. How to set caps that protect the client. High-mileage fleet strategies.',
+    gains:{mileage:14, trac:3, proposal:4},
+    insight:'Mileage overage is the most common surprise cost in a fleet lease. A rep who structures the cap correctly never gets that complaint. A rep who ignores it loses clients at renewal.',
+    quizChance:0.4,
+    quiz:{
+      q:'CPA asks: "What happens if they drive more than the mileage cap? How does that risk get quantified?"',
+      type:'cpa',
+      choices:[
+        {label:'Answer confidently',
+         text:'Overage is charged per mile above the cap — typically $0.05 to $0.20 depending on vehicle type and term. We set caps based on a route analysis, typically 10 to 15 percent above their current annual average. If we set the cap correctly upfront, overage should not be a surprise. I do that analysis before finalizing any proposal.',
+         outcome:'great',coaching:'Exact numbers, a clear process, and personal accountability. CPAs love precision. This answer makes you look like a professional, not a salesperson.'},
+        {label:'Give a vague answer',
+         text:'There is an overage rate if they go over — it depends on the vehicle.',
+         outcome:'miss',coaching:'Vague answers to CPA questions create doubt. They will assume the overage rate is higher than it is and flag it as a risk. Give numbers.'},
+        {label:'Defer to documentation',
+         text:'The mileage terms are all spelled out in the lease agreement — happy to send that over.',
+         outcome:'ok',coaching:'Acceptable but lazy. You had the answer — give it. Deferring to documents when you can answer directly makes you seem less expert.'},
+      ],
+    },
+  },
+  {
+    id:'early_term',
+    label:'Early Termination / Exit Structures',
+    icon:'🚪',
+    apCost:2,
+    desc:'What early termination liability (ETL) is. How it is calculated. How to minimize it through proper residual and term structuring. When it actually matters.',
+    gains:{earlyTerm:14, residual:4, trac:3},
+    insight:'Early termination scares owners because they imagine a worst-case scenario. Walk them through the actual math on their specific deal — the number is almost always much smaller than they fear.',
+    quizChance:0.35,
+    quiz:{
+      q:'Owner says: "What if my business slows down and I need to get out of the lease early?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'That is an important question and I want to give you a real answer. Early termination liability is the difference between what you owe and what the truck is worth at that point. For a well-structured lease with a conservative residual, that number is often smaller than people expect — especially in the first half of the term. I can model your specific early exit cost at 12, 24, and 36 months so you know your worst case before you sign.',
+         outcome:'great',coaching:'You answered honestly, put it in context, and offered to do the work. Proactively modeling exit costs is something most reps never do — it builds enormous trust.'},
+        {label:'Minimize it',
+         text:'Early termination is rarely an issue — most businesses keep their trucks for the full term.',
+         outcome:'ok',coaching:'Probably true but you dodged the question. They asked about their downside, not the average. Answer the actual question.'},
+        {label:'Avoid the topic',
+         text:'Let us not worry about that — your business sounds stable.',
+         outcome:'miss',coaching:'Never dismiss a risk question. They will bring it up again with a competitor who gives them a real answer — and lose you the deal.'},
+      ],
+    },
+  },
+  {
+    id:'upfit',
+    label:'Upfit Financing',
+    icon:'🔧',
+    apCost:2,
+    desc:'How vehicle upfits (shelving, cranes, ladder racks, graphics, HVAC equipment) are financed into TRAC leases. Title implications. Upfit depreciation treatment.',
+    gains:{upfit:14, insurance:3, credit:3},
+    insight:'Upfits rolled into the lease mean zero out-of-pocket at delivery. This is often the differentiator between a lease and a cash purchase for trade businesses — they need the upfit, not just the truck.',
+    quizChance:0.3,
+    quiz:{
+      q:'Owner asks: "Can we get the shelving and ladder rack included? Or do we have to buy that separately?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'You can roll the upfit directly into the lease — the shelving, ladder rack, graphics, whatever you need. That means zero out-of-pocket at delivery. The upfit cost gets spread across the lease term, so your monthly payment is slightly higher but your day-one cash outlay is nothing. For most trade businesses that is actually more valuable than any tax deduction.',
+         outcome:'great',coaching:'Clear, specific, and you tied it to their cash flow — which is what they care about. This answer moves deals forward.'},
+        {label:'Partially answer',
+         text:'We can include some upfits — depends on what you need.',
+         outcome:'ok',coaching:'Wishy-washy. They wanted a yes or no and you gave them a maybe. Own the answer: yes, upfits can be rolled in. Then get specific.'},
+        {label:'Say to handle it separately',
+         text:'Upfits are usually handled separately through an equipment supplier.',
+         outcome:'miss',coaching:'Wrong — and it costs you a deal advantage. Rolling upfits into the lease is a significant benefit. Not knowing this means you are leaving it on the table.'},
+      ],
+    },
+  },
+  {
+    id:'insurance',
+    label:'Insurance, Registration & Titling',
+    icon:'🔒',
+    apCost:1,
+    desc:'Who holds title in a TRAC lease. How registration works. Insurance requirements. Fleet rider policies. How to explain title to worried owners.',
+    gains:{insurance:14, credit:3, trac:2},
+    insight:'Most owners assume leasing is complicated for insurance and registration. It is not. The answer is: everything works the same as if they owned it — they just do not hold the title.',
+    quizChance:0.25,
+    quiz:{
+      q:'Owner asks: "Do we lose control of the trucks? Who owns them — you or us?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'Operationally you are in full control — your drivers, your routes, your maintenance. We hold the title during the lease term, same as a bank holds title when you finance a truck through them. You register the vehicle, you carry the insurance, and your name is on everything operationally. At lease end you can buy it outright, return it, or re-lease a new one.',
+         outcome:'great',coaching:'The bank financing comparison is the perfect frame. Every owner understands that the bank holds title on a financed vehicle — this makes leasing feel familiar instead of foreign.'},
+        {label:'Explain it technically',
+         text:'The lessor holds legal title but you have full operational use rights under the lease agreement.',
+         outcome:'ok',coaching:'Accurate but cold. "Legal title" sounds scary. The bank analogy lands much better.'},
+        {label:'Downplay the title issue',
+         text:'Title is just a paperwork thing — it does not really affect anything.',
+         outcome:'miss',coaching:'Dismissing their concern backfires. They asked because it matters to them. Acknowledge it and explain it — do not wave it off.'},
+      ],
+    },
+  },
+  {
+    id:'credit_docs',
+    label:'Credit, Underwriting & Required Docs',
+    icon:'📁',
+    apCost:2,
+    desc:'What lenders need. Business financials, tax returns, entity docs. Credit scoring for commercial fleets. Common approval and decline factors. Timeline management.',
+    gains:{credit:14, asc842:2, proposal:4},
+    insight:'The doc chase kills more deals than any objection. Reps who front-load doc collection and give owners a precise checklist close faster. Start asking for docs at first discovery — not after verbal yes.',
+    quizChance:0.3,
+    quiz:{
+      q:'Owner asks: "How long does approval take once we decide to move forward?"',
+      type:'owner',
+      choices:[
+        {label:'Answer confidently',
+         text:'From the time we have your complete doc package — credit app, two years of business returns, YTD P&L, and entity documents — approval is typically 3 to 5 business days. Delivery after approval is another 2 to 4 weeks depending on what is in stock. Total timeline from docs to keys: 3 to 5 weeks for most deals.',
+         outcome:'great',coaching:'Specific timelines build confidence. Owners who know the timeline do not ghost on docs — vagueness creates procrastination.'},
+        {label:'Give a vague range',
+         text:'It usually takes a few weeks after we get everything submitted.',
+         outcome:'ok',coaching:'Better than nothing but vague. "A few weeks" starts at 2 and ends at never in an owner\'s mind. Specific is always better.'},
+        {label:'Say it depends',
+         text:'It depends on your credit profile and how quickly you get us the documents.',
+         outcome:'miss',coaching:'This is true but useless. It makes them feel like they might not qualify. Lead with the standard timeline and note that docs are the variable.'},
+      ],
+    },
+  },
+  {
+    id:'cpa_mastery',
+    label:'CPA Objection Handling',
+    icon:'🧾',
+    apCost:2,
+    desc:'The 10 most common CPA objections. How to speak accounting language. Building CPA relationships. Turning skeptical accountants into champions.',
+    gains:{cpaHandling:15, asc842:5, sec179:3},
+    insight:'A CPA who blocks your deal was never against you — they were protecting their client from something they did not understand. Education, not persuasion, is the unlock.',
+    quizChance:0.5,
+    quiz:{
+      q:'CPA says: "I always recommend my clients own their vehicles. Leasing is just paying for someone else\'s profit."',
+      type:'cpa',
+      choices:[
+        {label:'Address it directly',
+         text:'I respect that — ownership is the right answer for some clients. The question I would ask is: what is the actual all-in cost of ownership for this client versus a TRAC structure? I have seen cases where the working capital freed up by leasing generates more return than the equity built through ownership. I am happy to run both scenarios side by side with their actual numbers if that would help.',
+         outcome:'great',coaching:'You did not argue. You acknowledged the CPA\'s position, reframed the question, and offered to do the analysis. That is how you turn a blocking CPA into a collaborator.'},
+        {label:'Defend leasing',
+         text:'Leasing actually provides better economics in most situations when you factor in all the costs.',
+         outcome:'miss',coaching:'You just argued with a CPA about tax and financial strategy. That never works. Acknowledge their position, then redirect to the data.'},
+        {label:'Agree and move on',
+         text:'You raise a fair point — let me check if leasing even makes sense for this client.',
+         outcome:'ok',coaching:'Too soft. You retreated from the deal. The offer to run both scenarios is better — it shows confidence without confrontation.'},
+      ],
+    },
+  },
+  {
+    id:'owner_objections',
+    label:'Owner Objection Handling',
+    icon:'🤝',
+    apCost:2,
+    desc:'The 8 most common owner objections. The ownership objection. The equity objection. The payment objection. The trust objection. How to handle each without getting defensive.',
+    gains:{ownerObj:15, discovery:5, negotiation:5},
+    insight:'Most owner objections are not objections — they are requests for more information delivered in defensive language. Curiosity, not counter-argument, is the unlock.',
+    quizChance:0.5,
+    quiz:{
+      q:'Owner says: "I like to own my assets. Always have."',
+      type:'owner',
+      choices:[
+        {label:'Ask a question',
+         text:'I respect that. Can I ask — what does ownership give you that you would lose with a lease? I want to make sure I understand what matters to you before I say anything.',
+         outcome:'great',coaching:'Perfect. You did not argue. You asked what the objection is actually about. "I like to own" can mean equity, control, pride, or fear of commitment — you cannot address it until you know which one it is.'},
+        {label:'Counter with TCO data',
+         text:'Most business owners feel that way until they look at the actual numbers — the real cost of ownership is usually higher than people think.',
+         outcome:'ok',coaching:'You jumped to the answer before understanding the question. The TCO argument is useful but premature here. Ask first, then present data.'},
+        {label:'Agree and back down',
+         text:'That makes total sense — you have been successful doing it that way.',
+         outcome:'miss',coaching:'You agreed with the objection and walked away. "I like to own" is an opening, not a wall. Curiosity opens it up.'},
+      ],
+    },
+  },
+  {
+    id:'discovery_skills',
+    label:'Consultative Discovery',
+    icon:'🔍',
+    apCost:2,
+    desc:'The 7 questions every fleet discovery must answer. Pain mapping. Decision maker identification. Timeline qualification. How to listen your way to a proposal.',
+    gains:{discovery:15, ownerObj:5, proposal:6},
+    insight:'Reps who skip discovery build proposals that do not address the real pain. Reps who run thorough discovery build proposals that practically close themselves.',
+    quizChance:0.3,
+    quiz:{
+      q:'You are 10 minutes into a discovery call. Owner has been vague. How do you surface the real pain?',
+      type:'owner',
+      choices:[
+        {label:'Ask a direct pain question',
+         text:'"Can I ask you something direct — what finally made you take this call today? Something changed, or something is getting worse. What is it?"',
+         outcome:'great',coaching:'This question cuts through polite small talk and gets to the actual driver. Most owners respect the directness and answer honestly. It is the best question in discovery.'},
+        {label:'Start presenting your program',
+         text:'Let me walk you through how our fleet program works and you can tell me if it fits.',
+         outcome:'miss',coaching:'You switched into pitch mode before you know what they need. A proposal that does not address their specific pain will not close. Discovery first, always.'},
+        {label:'Ask about their fleet size',
+         text:'"How many vehicles are you running right now?"',
+         outcome:'ok',coaching:'Not wrong but too surface level. Fleet count is on the TWIC report. The real discovery question is about pain, timing, and decision-making — not specs you could find elsewhere.'},
+      ],
+    },
+  },
+  {
+    id:'proposal_mastery',
+    label:'Proposal Building',
+    icon:'📄',
+    apCost:2,
+    desc:'What makes a proposal get a response. The TCO comparison structure. Referencing their specific pain. Preliminary vs. final proposal. How to present vs. just send.',
+    gains:{proposal:15, tco:5, negotiation:4},
+    insight:'A proposal that references their specific repair costs, their specific routes, and their specific decision timeline closes at 3x the rate of a generic fleet pricing sheet.',
+    quizChance:0.25,
+    quiz:{
+      q:'You built a proposal. Owner asks: "Can you just email it over?" You have not presented it. What do you do?',
+      type:'owner',
+      choices:[
+        {label:'Insist on a presentation call',
+         text:'"I can — and I will. But I want to walk you through it so I can answer your questions in real time. Can we do a 20-minute Zoom when I send it over? It will be worth your time."',
+         outcome:'great',coaching:'Proposals that get emailed without presentation get read passively or not at all. A 20-minute walk-through is where deals happen. Never skip it if you can avoid it.'},
+        {label:'Just email it',
+         text:'"Sure — sending it now."',
+         outcome:'miss',coaching:'Emailed-only proposals have a fraction of the close rate of presented proposals. You just gave away your biggest opportunity to read the room and handle objections in real time.'},
+        {label:'Email with a follow-up call scheduled',
+         text:'"I will send it now and let\'s schedule a quick call tomorrow to go through it together."',
+         outcome:'ok',coaching:'Better than nothing. The call tomorrow is critical — confirm it before you send the proposal, not after.'},
+      ],
+    },
+  },
+  {
+    id:'negotiation',
+    label:'Negotiation & Closing',
+    icon:'🎯',
+    apCost:2,
+    desc:'When to ask for the business. How to ask directly. Reading buying signals. Handling stalls vs. real objections. What to do after a verbal yes.',
+    gains:{negotiation:15, ownerObj:6, proposal:4},
+    insight:'The close is not a technique — it is a direct question. "Are we ready to move forward?" Most buyers are waiting for permission to say yes. You are the one who has to create that moment.',
+    quizChance:0.5,
+    quiz:{
+      q:'Owner says: "How long does this take to get done?" You have presented the proposal. What do you do?',
+      type:'owner',
+      choices:[
+        {label:'Recognize it as a buying signal and close',
+         text:'"That is a great sign — it means you are ready to move. From the time we have your docs submitted, approval is 3 to 5 days and delivery is 2 to 4 weeks. We can be rolling in about a month. Should we get started?"',
+         outcome:'great',coaching:'"How long does this take" is the most common buying signal in fleet sales. Answering the question and immediately asking for the business is exactly right. Do not hesitate.'},
+        {label:'Just answer the timeline question',
+         text:'"It typically takes 3 to 5 weeks from start to delivery."',
+         outcome:'ok',coaching:'You answered but missed the signal. The follow-up should have been "should we get started?" You had an opening and did not take it.'},
+        {label:'Say it depends on them',
+         text:'"It depends on how quickly you can get us the documents."',
+         outcome:'miss',coaching:'You turned a buying signal into a potential obstacle. They asked about timeline — give them the timeline and ask for the business.'},
+      ],
+    },
+  },
+  {
+    id:'bonus_depreciation',
+    label:'Bonus Depreciation',
+    icon:'📈',
+    apCost:2,
+    desc:'Current bonus depreciation phase-out schedule. How it interacts with fleet decisions. When bonus depreciation favors purchase vs. lease. Year-end timing plays.',
+    gains:{depreciation:14, sec179:5, cpaHandling:4},
+    insight:'Bonus depreciation is a moving target — the percentage phases out over time. Knowing the current year rate and the phase-out schedule lets you have informed conversations with CPAs about timing.',
+    quizChance:0.3,
+    quiz:{
+      q:'CPA asks: "With bonus depreciation phasing out, does leasing become more attractive relative to buying?"',
+      type:'cpa',
+      choices:[
+        {label:'Answer confidently',
+         text:'Generally yes — as bonus depreciation phases down, the year-one tax advantage of purchasing shrinks. The lease expense deduction stays consistent regardless of depreciation rules. For clients who relied heavily on bonus depreciation to justify purchasing, a TRAC lease becomes more competitively positioned each year.',
+         outcome:'great',coaching:'You turned a technical question into a strategic framing. That is what CPAs want — someone who thinks about the big picture, not just the product.'},
+        {label:'Say you will check',
+         text:'"I want to make sure I give you the accurate current-year rate — let me confirm and get back to you."',
+         outcome:'ok',coaching:'Acceptable if you genuinely do not know the current rate. But paired with the strategic context above, a full answer is more impressive.'},
+        {label:'Agree vaguely',
+         text:'"Yes, leasing has become more attractive recently from a tax perspective."',
+         outcome:'miss',coaching:'True but empty. CPAs do not respect vague answers. Either know the details or defer cleanly.'},
+      ],
+    },
+  },
+];
+
+
+function doStudyProduct(){
+  const pk = G.productKnowledge;
+  const career = getCareerLevel();
+
+  // Calculate total and show career level
+  const total = Object.values(pk).reduce((s,v)=>s+v,0);
+  const maxTotal = Object.keys(PK_DEFAULTS).length * 100;
+
+  const pkRows = Object.entries(pk).map(([k,v])=>{
+    const pct = Math.round(v);
+    const color = v>=70?'#1a7f4b':v>=40?'#b45309':'#d93025';
+    const bar = `<div style="flex:1;height:4px;background:#e5e5ea;border-radius:2px;overflow:hidden;margin:0 6px"><div style="height:100%;width:${Math.min(100,pct)}%;background:${color};border-radius:2px"></div></div>`;
+    return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:10px"><span style="width:90px;color:#6e6e73">${k}</span>${bar}<span style="width:24px;text-align:right;color:${color};font-weight:600">${pct}</span></div>`;
+  }).join('');
+
+  const moduleCards = ACADEMY_MODULES.map(m=>{
+    const avgGain = Object.values(m.gains).reduce((s,v)=>s+v,0);
+    const gainPreview = Object.entries(m.gains).map(([k,v])=>`+${v} ${k}`).join(' · ');
+    return `<div class="engbtn" data-mid="${m.id}" onclick="studyModuleById(this)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">${m.icon}</span>
+        <div style="flex:1">
+          <div class="elabel">${m.label} <span style="font-size:9px;color:#aeaeb2;font-weight:normal">(${m.apCost} AP)</span></div>
+          <div class="esub">${gainPreview}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  showModal('Fleet Academy',
+    `<div style="background:${career.color}15;border:1px solid ${career.color}40;border-radius:9px;padding:10px 13px;margin-bottom:12px">
+      <div style="font-size:10px;color:#aeaeb2;letter-spacing:.08em;margin-bottom:3px">CAREER LEVEL</div>
+      <div style="font-size:18px;font-weight:700;color:${career.color};margin-bottom:3px">${career.level}</div>
+      <div style="font-size:11px;color:#6e6e73">${career.tip}</div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;color:#aeaeb2;margin-bottom:6px;font-weight:600">KNOWLEDGE PROFILE</div>
+      ${pkRows}
+    </div>
+    <div style="font-size:10px;color:#aeaeb2;margin-bottom:8px;font-weight:600">CHOOSE A TRAINING MODULE</div>
+    ${moduleCards}
+    <div class="brow"><button onclick="closeModal()">Close</button></div>`
+  );
+}
+
+function studyModuleById(el){ studyModule(el.dataset.mid); }
+
+function studyModule(moduleId){
+  const m = ACADEMY_MODULES.find(x=>x.id===moduleId);
+  if(!m){ closeModal(); return; }
+  if(!useAP(m.apCost)){ closeModal(); return; }
+
+  // Apply gains with some variance
+  const gained = {};
+  Object.entries(m.gains).forEach(([k,v])=>{
+    const before = G.productKnowledge[k]||0;
+    const actual = Math.min(100-before, Math.round(v * (0.85 + Math.random()*0.3)));
+    G.productKnowledge[k] = Math.min(100, before + actual);
+    gained[k] = {before, after:G.productKnowledge[k], delta:actual};
+  });
+
+  G.conf  = clamp(G.conf+rnd(2,5));
+  G.rep.au = clamp(G.rep.au+1);
+  G.disc  = clamp(G.disc+1);
+  G.burnout = clamp(G.burnout+0.5); // studying is low-burnout
+
+  const career = getCareerLevel();
+  const gainRows = Object.entries(gained).map(([k,g])=>
+    `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px">
+      <span style="width:100px;color:#6e6e73">${k}</span>
+      <span style="color:#aeaeb2">${g.before}</span>
+      <span style="color:#aeaeb2;margin:0 4px">→</span>
+      <span style="color:#1a7f4b;font-weight:700">${g.after}</span>
+      <span style="color:#1a7f4b;font-size:10px">(+${g.delta})</span>
+    </div>`
+  ).join('');
+
+  addFeed(`📚 Studied: ${m.label} — ${Object.entries(gained).map(([k,g])=>`+${g.delta} ${k}`).join(', ')}`);
+
+  // Decide whether to show an interactive quiz moment
+  const showQuiz = m.quiz && Math.random() < m.quizChance;
+
+  if(showQuiz){
+    showModal(`Study Complete — ${m.label}`,
+      `<div class="rb rb-s" style="margin-bottom:10px">
+        <div class="rbt">${m.label}</div>${m.desc}
+        <div class="insight">${m.insight}</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#aeaeb2;margin-bottom:6px;font-weight:600">KNOWLEDGE GAINED</div>
+        ${gainRows}
+      </div>
+      <div style="background:#f0f6ff;border:1px solid #a8c4f0;border-radius:9px;padding:12px;margin-bottom:8px">
+        <div style="font-size:10px;color:#0a66c2;font-weight:600;margin-bottom:6px">🎯 TRAINING SCENARIO — Test what you just learned</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:10px">${m.quiz.type==='cpa'?'CPA asks:':'Owner asks:'} "${m.quiz.q}"</div>
+        ${m.quiz.choices.map((c,i)=>
+          `<div class="engbtn" onclick="handleQuizChoice('${moduleId}',${i})">
+            <div class="elabel">${c.label}</div>
+            <div class="esub">${c.text.substring(0,80)}...</div>
+          </div>`
+        ).join('')}
+      </div>
+      <div style="font-size:11px;color:#aeaeb2">Career level: <span style="color:${career.color};font-weight:600">${career.level}</span></div>
+      <div class="brow"><button onclick="closeModal();doStudyProduct()">Study another</button></div>`
+    );
+  } else {
+    showModal(`Study Complete — ${m.label}`,
+      `<div class="rb rb-s" style="margin-bottom:10px">
+        <div class="rbt">${m.label}</div>${m.desc}
+        <div class="insight">${m.insight}</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#aeaeb2;margin-bottom:6px;font-weight:600">KNOWLEDGE GAINED</div>
+        ${gainRows}
+      </div>
+      <div style="font-size:11px;color:#aeaeb2">Career level: <span style="color:${career.color};font-weight:600">${career.level}</span></div>
+      <div class="brow">
+        <button class="btn-primary" onclick="closeModal()">Got it</button>
+        <button onclick="closeModal();doStudyProduct()">Study another topic</button>
+      </div>`
+    );
+  }
+  updateUI();
+}
+
+function handleQuizChoice(moduleId, choiceIdx){
+  const m = ACADEMY_MODULES.find(x=>x.id===moduleId);
+  if(!m||!m.quiz) return;
+  const c = m.quiz.choices[choiceIdx];
+  const isGreat  = c.outcome==='great';
+  const isOk     = c.outcome==='ok';
+
+  // Outcome affects stats
+  if(isGreat){
+    G.conf = clamp(G.conf+rnd(3,6));
+    G.productKnowledge[Object.keys(m.gains)[0]] = clamp((G.productKnowledge[Object.keys(m.gains)[0]]||0)+3);
+  } else if(!isOk){
+    G.conf = clamp(G.conf-rnd(1,3));
+  }
+
+  const career = getCareerLevel();
+  showModal('Training Result',
+    `<div class="rb rb-${isGreat?'s':isOk?'n':'e'}" style="margin-bottom:10px">
+      <div class="rbt">${isGreat?'✅ Strong answer':'⚠️ '+( isOk?'Acceptable but could be stronger':'Weak answer — this would hurt you in the field')}</div>
+      <div style="font-size:12px;font-style:italic;color:#6e6e73;margin-bottom:8px">"${c.text}"</div>
+      <div class="insight">${c.coaching}</div>
+    </div>
+    <div style="font-size:11px;color:#aeaeb2">Career level: <span style="color:${career.color};font-weight:600">${career.level}</span></div>
+    <div class="brow">
+      <button class="btn-primary" onclick="closeModal()">Continue</button>
+      <button onclick="closeModal();doStudyProduct()">Study another topic</button>
+    </div>`
+  );
+  updateUI();
+}
+
+// ── Just-in-time learning prompt ──────────────────────────────
+// Called when a knowledge gate is hit during a CPA call
+function offerJITLearning(area, prospectId){
+  const m = ACADEMY_MODULES.find(x=>x.gains&&x.gains[area]>0);
+  showModal('Knowledge Gap — Just-In-Time Learning',
+    `<div class="rb rb-n" style="margin-bottom:10px">
+      <div class="rbt">Your ${area} knowledge is below the threshold for this conversation</div>
+      You can handle it now with one of these options, or study first and reschedule.
+    </div>
+    <div class="engbtn" onclick="cpaResponse(\\'defer\\')">
+      <div class="elabel">Defer to internal finance team (professional)</div>
+      <div class="esub">Standard move for new reps. Buys time. Never loses you points.</div>
+    </div>
+    <div class="engbtn" onclick="cpaResponse(\\'followup\\')">
+      <div class="elabel">Schedule 3-way call with your manager</div>
+      <div class="esub">Brings backup. Shows you have resources.</div>
+    </div>
+    ${m?`<div class="engbtn" onclick="closeModal();studyModule('${m.id}')">
+      <div class="elabel">Study ${m.label} now (${m.apCost} AP)</div>
+      <div class="esub">Then reschedule the CPA call. Best long-term move.</div>
+    </div>`:''}
+    <div class="engbtn" onclick="cpaResponse(\\'written\\')">
+      <div class="elabel">Send written clarification (safe)</div>
+      <div class="esub">Research the answer and send a clean written response today.</div>
+    </div>
+    <div class="brow"><button onclick="closeModal()">Cancel</button></div>`
+  );
+}
+
+
+
+function doCreateContent(){
+  const posts=['What does one truck breakdown actually cost an Austin HVAC company?',
+    'TRAC lease vs buying — the real comparison for Texas service businesses',
+    'Why fleet managers quit companies with aging trucks',
+    '3 questions every fleet owner should ask before the next purchase',
+    'The hidden cost of fleet downtime in Austin summer season'];
+  const post=pick(posts);
+  const likes=rnd(8,52);const dms=likes>30?rnd(1,4):0;
+  G.rep.so=clamp(G.rep.so+rnd(3,8));G.rep.aw=clamp(G.rep.aw+rnd(2,4));
+  addFeed('✍️ Content: '+likes+' likes'+(dms?' · '+dms+' DMs':''));
+  showModal('Content Created',
+    '<div class="rb '+(likes>30?'rb-s':'rb-n')+'">'+
+    '<div class="rbt">'+likes+' likes'+(dms?' · '+dms+' DMs from Austin owners':'')+' </div>'+
+    '"'+post+'"'+
+    (dms?'<br><br>'+dms+' DM(s) asking about fleet options. Respond today — inbound leads.':'')+
+    '<div class="insight">Content that quantifies a problem gets shared. Promotional content gets ignored.</div></div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button></div>'
+  );
+}
+
+function doLinkedIn(){
+  const outcomes=[{h:'Post — strong engagement',msg:'34 likes, 6 comments, 2 DMs from Austin owners.',biz:false,rep:{so:8,aw:5}},{h:'Connection accepted — warm reply',msg:'Fleet manager replied: "Would love to hear more."',biz:true,rep:{so:2,aw:3}},{h:'20 connections sent',msg:'6 accepted same day.',rep:{so:3,aw:4},biz:false},{h:'Referral intro received',msg:'Connection introduced you to a Round Rock plumbing owner: "He has been complaining about his fleet."',biz:true,rep:{so:2,rf:3}},{h:'Message reply — interested',msg:'Owner: "Can we get on a call?"',biz:true,rep:{so:3,aw:2}},{h:'Messages sent',msg:'15 out, no replies yet. Follow up in 3 days.',rep:{so:1,aw:1},biz:false},{h:'Post — moderate reach',msg:'18 likes. Building awareness.',rep:{so:4,aw:2},biz:false}];
+  const r=pick(outcomes);
+  Object.entries(r.rep||{}).forEach(([k,v])=>{G.rep[k]=clamp((G.rep[k]||0)+v);});
+  if(r.biz){const avail=G.pipe.filter(p=>p.stage==='prospect');if(avail.length){const biz=avail[Math.floor(Math.random()*avail.length)];biz.stage='first_touch';biz.note='LinkedIn';biz.history.push({day:G.day,event:'LinkedIn: '+r.h});biz.trust=clamp(biz.trust+1);}}
+  addFeed('💼 LinkedIn: '+r.h);
+  showModal('LinkedIn Outreach','<div class="rb rb-'+(r.biz||(r.rep.so||0)>5?'s':'n')+'"><div class="rbt">'+r.h+'</div>'+r.msg+'<div class="insight">'+(r.biz?'New prospect in pipeline — check Engage.':'Consistent content builds inbound over 60-90 days.')+'</div></div><div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button></div>');
+  updateUI();
+}
+
+function doNetworking(){
+  G.rep.rf=clamp(G.rep.rf+rnd(2,5));G.rep.aw=clamp(G.rep.aw+rnd(1,3));G.rep.tr=clamp(G.rep.tr+1);
+  addFeed('🤝 Networking event — visibility built');
+  showModal('Networking Event',
+    '<div class="rb rb-s">'+
+    pick(['Austin Chamber of Commerce breakfast — met 3 trade business owners.',
+      'BNI Round Rock chapter — 2 fleet operators in the room.',
+      'Associated Builders & Contractors Austin chapter meeting.',
+      'HVAC supply house lunch — 12 contractors attended.'])+
+    '<div class="insight">Networking events are visibility events. Value comes from consistent attendance and follow-up within 24 hours.</div></div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button></div>'
+  );
+}
+
+function doCPALunch(){
+  if(G.productKnowledge.tax<40){
+    G.rep.tr=clamp(G.rep.tr-2);
+    showModal('CPA Lunch — Credibility Damage',
+      '<div class="rb rb-e"><div class="rbt">Tax knowledge too low ('+G.productKnowledge.tax+'%)</div>'+
+      'CPA asked about ASC 842 treatment and TRAC residual vs capital lease. You did not have a clean answer. She will not refer clients to someone who does not know the product.'+
+      '<div class="insight">Study tax treatment first. Need 40%+ before CPA lunches pay off.</div></div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>'
+    );return;
+  }
+  G.rep.rf=clamp(G.rep.rf+rnd(8,14));G.rep.tr=clamp(G.rep.tr+3);G.rep.au=clamp(G.rep.au+3);
+  addFeed('🍽️ CPA lunch — referral pipeline opened');
+  showModal('CPA Lunch',
+    '<div class="rb rb-s"><div class="rbt">Strong CPA lunch — referral pipeline opened</div>'+
+    'Tax knowledge ('+G.productKnowledge.tax+'%) held up. Explained TRAC residual treatment and ASC 842 clearly. She has 8 service business clients and is making introductions this week.'+
+    '<div class="insight">A well-prepared CPA lunch is worth more than 40 cold calls.</div></div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button></div>'
+  );
+}
+
+// ─── ENGAGE PANEL ────────────────────────────────────────────
+function renderEngagePanel(){
+  const el=document.getElementById('engage-list');if(!el)return;
+
+  const filter=G._engageFilter||null;
+  let active=G.pipe.filter(p=>!['prospect','closed_won','closed_lost'].includes(p.stage));
+
+  if(filter){
+    // Show filtered first, then rest
+    const filtered=active.filter(p=>p.stage===filter);
+    const rest=active.filter(p=>p.stage!==filter);
+    active=[...filtered,...rest];
+  } else {
+    // Sort: overdue first, locked last
+    active.sort((a,b)=>{
+      if(a.locked&&!b.locked)return 1;if(b.locked&&!a.locked)return -1;
+      if(a.nextFollowUp<=G.day&&b.nextFollowUp>G.day)return -1;
+      if(b.nextFollowUp<=G.day&&a.nextFollowUp>G.day)return 1;
+      return 0;
+    });
+  }
+
+  if(!active.length){
+    el.innerHTML='<div style="color:#aeaeb2;text-align:center;padding:2rem;font-size:12px">'+
+      'No active prospects. Drive territory or cold call to build pipeline.</div>';
+    return;
+  }
+
+  el.innerHTML=active.map(p=>renderProspectCard(p)).join('');
+
+  // Clear filter after render
+  G._engageFilter=null;
+}
+
+function renderProspectCard(p){
+  p=ensureProspectState(p);
+  const stageColor=STAGE_COL[p.stage]||'#aeaeb2';
+  const isLocked=p.locked;
+  const isOverdue=p.nextFollowUp&&p.nextFollowUp<=G.day&&!isLocked;
+
+  // Doc overdue logic
+  let docUrgency='';
+  if(['docs_requested','verbal_yes'].includes(p.stage)&&p.lastActionDay){
+    const daysSince=G.day-p.lastActionDay;
+    p.docOverdueDays=daysSince;
+    if(daysSince>=14)docUrgency='<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:6px 10px;font-size:11px;color:#dc2626;margin-bottom:6px">🔴 HIGH LOSS RISK — '+daysSince+' days with no docs. Intervene now or mark lost.</div>';
+    else if(daysSince>=7)docUrgency='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:6px 10px;font-size:11px;color:#c2410c;margin-bottom:6px">🟠 STALE — '+daysSince+' days outstanding. Send doc checklist again today.</div>';
+    else if(daysSince>=3)docUrgency='<div style="background:#fff8e1;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;font-size:11px;color:#b45309;margin-bottom:6px">⚠️ '+daysSince+' days since doc request. Follow up.</div>';
+    else if(daysSince>=2)docUrgency='<div style="font-size:11px;color:#b45309;margin-bottom:4px">Docs requested '+daysSince+' days ago — check in today.</div>';
+  }
+
+  const trustDots=[1,2,3,4,5].map(i=>
+    '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+(i<=p.trust?'#0a66c2':'#e5e5ea')+';margin-right:2px"></span>'
+  ).join('');
+
+  // What info is known vs hidden
+  const knownSection=p.disc?
+    '<div style="font-size:11px;margin-bottom:6px">'+
+    '<span style="color:#1c1c1e;font-weight:500">Pain: </span><span style="color:#6e6e73">'+p.disc.pain+'</span></div>'+
+    '<div style="font-size:11px;margin-bottom:4px;color:#6e6e73">'+
+    'Timeline: '+p.disc.timeline+' · Urgency: <b style="color:'+(p.disc.urgency>=7?'#d93025':p.disc.urgency>=5?'#b45309':'#6e6e73')+'">'+p.disc.urgency+'/10</b> · '+
+    'Decision makers: '+p.disc.decisionMakers.slice(0,2).join(', ')+'</div>'
+    :
+    '<div style="font-size:11px;color:#aeaeb2;font-style:italic;margin-bottom:6px">Pain, urgency, decision makers, accountant — all unknown. Run discovery first.</div>';
+
+  // History summary (last 2 entries)
+  const histSection=p.history.length?
+    '<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px;border-left:2px solid #e5e5ea;padding-left:8px">'+
+    p.history.slice(-2).map(h=>'Day '+h.day+': '+h.event.substring(0,60)).join('<br>')+'</div>'
+    :'';
+
+  // Valid actions for current stage
+  const validActions=(STAGE_ACTIONS[p.stage]||['admin']).filter(a=>{
+    // Disable already-completed actions
+    if(a==='build_proposal'&&p.proposalBuilt&&p.stage==='proposal_ready')return false;
+    if(a==='discovery'&&p.discoveryDone)return false;
+    return true;
+  });
+
+  const lockedBanner=isLocked?
+    '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:6px 10px;font-size:11px;color:#dc2626;margin-bottom:6px">'+
+    '🔒 '+p.lockedReason+' — unlocks Day '+p.lockedUntil+'</div>':'';
+
+  const overdueBanner=isOverdue?
+    '<div style="background:#fff8e1;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;font-size:11px;color:#b45309;margin-bottom:6px">'+
+    '⏰ Follow-up due (Day '+p.nextFollowUp+')</div>':'';
+
+  const actionButtons=isLocked?
+    '<div class="engbtn" onclick="engageAction(\''+p.id+'\',\'admin\')">'+
+    '<div class="elabel">Log note / set reminder</div>'+
+    '<div class="esub">Keep CRM updated while waiting.</div></div>'
+    :
+    validActions.map(a=>
+      '<div class="engbtn" onclick="engageAction(\''+p.id+'\',\''+a+'\')" '+
+      (G.ap<(AP_COSTS[a]||1)?'style="opacity:0.4;pointer-events:none" title="Not enough AP"':'')+'>' +
+      '<div class="elabel">'+(ACTION_LABELS[a]||a)+
+      ' <span style="font-size:9px;color:#aeaeb2;font-weight:normal">('+((AP_COSTS[a]||1))+' AP)</span></div>'+
+      '<div class="esub">'+getActionHint(a,p)+'</div></div>'
+    ).join('');
+
+  return '<div class="pcard" style="margin-bottom:10px;'+(isLocked?'opacity:0.8':'')+'">'+
+    '<div class="prow" style="margin-bottom:4px">'+
+    '<span style="font-size:18px">'+p.emoji+'</span>'+
+    '<div style="flex:1">'+
+    '<div style="font-weight:600;font-size:13px">'+p.name+'</div>'+
+    '<div style="font-size:10px;color:#6e6e73">'+p.industry+' · '+p.loc+' · ~'+p.fleetSize+' vehicles · '+p.vehicleTypes+'</div>'+
+    '</div>'+
+    '<span style="font-size:9px;padding:3px 8px;border-radius:4px;background:'+stageColor+'20;color:'+stageColor+';font-weight:600;white-space:nowrap">'+STAGE_LABEL[p.stage]+'</span>'+
+    '</div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">'+
+    'Trust: '+trustDots+' · Touches: '+p.touches+' · Irritation: '+p.irritation+'/10'+
+    (p.lastContact?' · Last contact: Day '+p.lastContact:'')+
+    '</div>'+
+    docUrgency+lockedBanner+overdueBanner+knownSection+histSection+
+    '<div class="ctitle" style="margin-bottom:4px">Actions available:</div>'+
+    actionButtons+
+    '</div>';
+}
+
+function getActionHint(action,p){
+  const hints={
+    live_call:'Phone call. Most deals close on the phone.',
+    text_followup:'Low pressure. Good for moving stalled threads.',
+    discovery:'Structured 30-min call to map their full situation. Do before proposal.',
+    build_proposal:'Build a targeted proposal using their specific pain points.',
+    present_proposal:'Walk them through the numbers on Zoom or in person.',
+    cpa_call:'Get their accountant on the call. Requires tax knowledge '+G.productKnowledge.tax+'%.',
+    doc_chase:'Follow up on outstanding documents. '+(p.docOverdueDays>3?'URGENT — '+p.docOverdueDays+' days overdue.':''),
+    admin:'Log a note or set a follow-up reminder. No AP wasted.',
+  };
+  return hints[action]||'';
+}
+
+// ─── ENGAGE ACTION ENGINE ────────────────────────────────────
+
+// ── PROSPECT STATE GUARD — called before any engage action ────────────────────
+function ensureProspectState(p){
+  if(!p) return p;
+  // Ensure all required fields exist with safe defaults
+  if(!p.history)          p.history=[];
+  if(!p.knownObjections)  p.knownObjections=[];
+  if(!p.knownDecisionMakers) p.knownDecisionMakers=[];
+  if(!p.stage)            p.stage='first_touch';
+  if(!p.trust)            p.trust=0;
+  if(!p.touches)          p.touches=0;
+  if(!p.irritation)       p.irritation=0;
+  if(!p.dealHealth)       p.dealHealth=100;
+  if(!p.closeAttempts)    p.closeAttempts=0;
+  if(!p.lastCloseDay)     p.lastCloseDay=0;
+  if(!p.docStage)         p.docStage='requested';
+  if(!p.docOverdueDays)   p.docOverdueDays=0;
+  if(p.locked===undefined) p.locked=false;
+  if(!p.fleetSize)        p.fleetSize=rnd(3,15);
+  if(!p.industry)         p.industry='Trade Services';
+  if(!p.emoji)            p.emoji='🏢';
+  if(!p.vehicleTypes)     p.vehicleTypes='commercial vehicles';
+  if(!p.approxAge)        p.approxAge='5-8 yrs';
+  if(!p.loc)              p.loc='Austin area';
+  if(!p.ownerName)        p.ownerName='Owner';
+  if(!p.note)             p.note='';
+  return p;
+}
+
+function engageAction(prospectId,actionId){
+  const p=ensureProspectState(G.pipe.find(x=>x.id===prospectId));if(!p)return;
+  const cost=AP_COSTS[actionId]||1;
+  if(!useAP(cost))return;
+
+  G.burnout=clamp(G.burnout+rnd(1,2));G.ener=clamp(G.ener-2);
+  p.touches++;p.lastContact=G.day;p.lastActionDay=G.day;
+
+  const handlers={
+    live_call:()=>handleLiveCall(p),
+    text_followup:()=>handleText(p),
+    discovery:()=>handleDiscovery(p),
+    build_proposal:()=>handleBuildProposal(p),
+    present_proposal:()=>handlePresentProposal(p),
+    cpa_call:()=>handleCPACall(p),
+    doc_chase:()=>handleDocChase(p),
+    admin:()=>handleAdmin(p),
+    close_attempt:()=>handleCloseAttempt(p),
+    send_revised:()=>handleSendRevised(p),
+  };
+  if(handlers[actionId])handlers[actionId]();
+  else engageResult(p,'Action taken','Interaction logged.','','');
+  updateUI();
+}
+
+// ─── STAGE TRANSITION HELPER ─────────────────────────────────
+function advanceStage(p,targetStage,note){
+  const ci=STAGE_ORDER.indexOf(p.stage),ti=STAGE_ORDER.indexOf(targetStage);
+  if(ti>ci){p.stage=targetStage;if(note)p.note=note;}
+  p.history.push({day:G.day,event:(note||targetStage).substring(0,80)});
+}
+
+// ─── LIVE CALL ───────────────────────────────────────────────
+function handleLiveCall(p){
+  G.rep.tr=clamp(G.rep.tr+0.2);G.rep.pr=clamp(G.rep.pr+0.3);
+  let outcome,coaching='',advance=false;
+
+  if(p.stage==='first_touch'){
+    const roll=Math.random();
+    if(roll<0.20){
+      outcome=pick(RESPONSES.first_touch_pain_signal);
+      advanceStage(p,'connected','First call — pain signal: '+outcome.substring(0,40));
+      p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(1,3);advance=true;
+      coaching='Pain on the first call. Book the discovery immediately — do not let this sit.';
+    } else if(roll<0.40){
+      outcome=pick(RESPONSES.first_touch_curious);
+      advanceStage(p,'connected','First call — curious: '+outcome.substring(0,40));
+      p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(2,4);advance=true;
+      coaching='Curiosity is an open door. Schedule the discovery call before you hang up.';
+    } else if(roll<0.55){
+      outcome=pick(RESPONSES.first_touch_timing_delay);
+      p.locked=true;p.lockedReason='Timing delay — '+outcome.substring(0,40);
+      p.lockedUntil=G.day+rnd(7,21);p.nextFollowUp=p.lockedUntil;
+      advanceStage(p,'connected','Timing delay — '+outcome.substring(0,40));
+      coaching='Set the calendar reminder now. Do not rely on memory.';
+    } else if(roll<0.70){
+      outcome=pick(RESPONSES.first_touch_brushoff);
+      p.irritation=clamp(p.irritation+1,0,10);
+      coaching='Brush-off is not a no. Try a different channel in 5 days.';
+    } else {
+      outcome=pick(RESPONSES.first_touch_voicemail.concat(RESPONSES.first_touch_gatekeeper));
+      coaching='Voicemail. Try before 8am or after 5pm tomorrow.';
+    }
+  }
+
+  else if(p.stage==='connected'){
+    const roll=Math.random();
+    if(roll<0.40){
+      outcome='They agreed to a discovery call. Scheduled for '+rnd(2,5)+' days out.';
+      advanceStage(p,'discovery_scheduled','Discovery call scheduled');
+      p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(2,5);advance=true;
+      coaching='Good. Prep your discovery questions. Know their industry. Do not pitch.';
+    } else if(roll<0.60){
+      outcome='"Still thinking about it. Call me next week."';
+      p.locked=true;p.lockedReason='Following up next week';p.lockedUntil=G.day+7;p.nextFollowUp=G.day+7;
+      coaching='Next week with no specific day means it could die. Send a calendar invite.';
+    } else {
+      outcome=pick(RESPONSES.connected_soft_no.concat(RESPONSES.first_touch_brushoff));
+      p.irritation=clamp(p.irritation+1,0,10);
+      coaching='Not every connected prospect advances. Move on and revisit in 30 days.';
+    }
+  }
+
+  else if(p.stage==='discovery_scheduled'){
+    outcome='Confirmed the discovery call is still on. They are ready.';
+    p.nextFollowUp=G.day+rnd(1,2);
+    coaching='Run the discovery call as your next action on this prospect.';
+  }
+
+  else if(['discovery_done','qualified'].includes(p.stage)){
+    const roll=Math.random();
+    if(roll<0.35){
+      outcome='Good check-in. They asked a few more questions about structure. Building toward proposal.';
+      p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(2,4);advance=true;
+    } else if(roll<0.65){
+      outcome='"Waiting on our accountant. Give us a few more days."';
+      p.locked=true;p.lockedReason='Waiting on accountant';p.lockedUntil=G.day+rnd(4,8);
+      coaching='Offer to get on a 15-minute call with the accountant directly. You solve it faster.';
+    } else {
+      outcome='"Honestly we are slammed right now. Call me in two weeks."';
+      p.locked=true;p.lockedReason='Owner too busy';p.lockedUntil=G.day+14;
+      coaching='Mark it and move on. Two weeks is a real pause, not a no.';
+    }
+  }
+
+  else if(['proposal_ready','proposal_presented'].includes(p.stage)){
+    const roll=Math.random();
+    if(roll<0.30){
+      outcome='They reviewed the proposal. Have questions about residual and term. Moving toward negotiation.';
+      advanceStage(p,'objection_handling','Reviewing proposal — objections surfaced');
+      p.trust=clamp(p.trust+1);
+    } else if(roll<0.55){
+      outcome=pick(RESPONSES.ghost_after_proposal);
+      p.irritation=clamp(p.irritation+1,0,10);
+      coaching='Ghost after proposal usually means the pain is not acute enough. Find out what changed.';
+    } else {
+      outcome='"Have not had a chance to look at it. This week for sure."';
+      p.locked=true;p.lockedReason='Reviewing proposal';p.lockedUntil=G.day+5;
+    }
+  }
+
+  else if(['objection_handling','negotiation'].includes(p.stage)){
+    const roll=Math.random();
+    if(roll<0.40){
+      outcome='Good call. Objection addressed, they are moving forward. Heading toward close.';
+      advanceStage(p,'negotiation','Objection handled — moving to negotiation');
+      p.trust=clamp(p.trust+1);
+    } else {
+      outcome='"I need a bit more time." They are not objecting but not buying either.';
+      p.nextFollowUp=G.day+rnd(3,6);
+    }
+  }
+
+  else if(p.stage==='verbal_yes'){
+    const daysSince=p.closedDay?G.day-p.closedDay:0;
+    if(daysSince>10){
+      outcome='Reached them. They apologized — docs are delayed. Insurance cert still at broker.';
+      p.docStatus='insurance cert delayed at broker';
+      coaching='Ask for a hard deadline: "Can you have everything over by Friday?" Do not accept vague.';
+    } else {
+      outcome='Quick check-in. They are working on docs. Accountant reviewing the agreement.';
+      p.docStatus='in progress';
+    }
+  }
+
+  else if(['docs_requested','docs_received'].includes(p.stage)){
+    const outcomes=[
+      {msg:'They are filling out the credit app today.',doc:'credit app in progress'},
+      {msg:'Office manager handling it. Estimates 3-4 days.',doc:'office manager processing'},
+      {msg:'"I sent it — did you get it?" Check your email.',doc:'may have been sent'},
+      {msg:'They forgot. Apologized. Sending tonight.',doc:'resending tonight'},
+    ];
+    const r=pick(outcomes);
+    outcome=r.msg;p.docStatus=r.doc;
+    coaching='Follow up every 48 hours on docs. Set a hard deadline.';
+  }
+
+  else{
+    outcome='Good touchpoint. Relationship warm. No major movement today.';
+    p.trust=clamp(p.trust+0.1);
+  }
+
+  addFeed(p.name+': '+outcome.substring(0,50));
+  engageResult(p,'Call — '+p.name,outcome,
+    advance?'Stage: '+STAGE_LABEL[p.stage]:'',coaching);
+}
+
+// ─── TEXT / EMAIL ────────────────────────────────────────────
+function handleText(p){
+  const outcomes=[
+    {o:'positive',t:'Replied within 20 minutes. "Good timing — want to set up a call this week?"',advance:true},
+    {o:'positive',t:'"Hey, actually been meaning to follow up. Thursday 2pm work?"',advance:true},
+    {o:'neutral',t:'Read receipt. No response yet. Give it 48 hours.',advance:false},
+    {o:'neutral',t:'"Sounds good — let me check with my accountant first."',advance:false},
+    {o:'negative',t:'Left on read. Three days later, still nothing.',advance:false},
+    {o:'negative',t:'"We decided to hold off for now."',advance:false},
+  ];
+  const r=pick(outcomes);
+  if(r.advance){p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(1,3);}
+  p.history.push({day:G.day,event:'Text/email: '+r.t.substring(0,60)});
+  p.note=r.t.substring(0,60);
+  addFeed(p.name+' (text): '+r.t.substring(0,40));
+  engageResult(p,'Text / Email — '+p.name,r.t,'','');
+}
+
+// ─── DISCOVERY ───────────────────────────────────────────────
+function handleDiscovery(p){
+  const companyData=COMPANIES.find(c=>c.id===p.id);
+  const _d=companyData?._disc;
+  // No named company data? Generate realistic discovery for TWIC prospects
+  if(!_d){
+    if(p.discoveryDone && p.disc){
+      engageResult(p,'Discovery Already Complete',
+        'You already ran discovery on '+p.name+'. Their information is saved. Build the proposal next.',
+        'Next action: Build Proposal','');
+      return;
+    }
+    // Generate discovery on the fly for TWIC-generated prospect
+    const urgency=rnd(3,9);
+    const pains=['Repairs increasing every quarter — owner writing checks personally',
+      'Lost a bid because trucks looked unprofessional','One truck down 3+ weeks — missing jobs',
+      'Two trucks out simultaneously — nearly lost a major contract',
+      'Crew complaining about reliability — hiring is getting harder',
+      'Insurance renewal flagged vehicles over 150K miles — rate increase',
+      'Fleet manager wants to quit over truck quality','Owner just wrote a $4,800 repair check'];
+    const accountants=['No dedicated CPA — uses QuickBooks','H&R Block at tax time',
+      'Outside CPA, stance on leasing unknown','Wife handles bookkeeping',
+      'Fractional CFO, generally open-minded','Small CPA firm, conservative'];
+    const timelines=['wants resolved before end of summer','no hard deadline — but pain is real',
+      'Q3 target','needs trucks for new contract starting soon','immediate — already shopping'];
+    const generated = {
+      pain: pick(pains),
+      cashFlow: pick(['strong summers slow winters','stable and growing','tight but consistent','strong — good revenue']),
+      accountant: pick(accountants),
+      accountantStance: pick(['unknown — need to ask','neutral','possibly skeptical','open to exploring it']),
+      timeline: pick(timelines),
+      urgency,
+      creditRisk: pick(['low','low-medium','medium']),
+      decisionMakers: [p.ownerName||'Owner'],
+      replacementPlan: 'unknown — needs discussion',
+      currentFinancing: pick(['bought trucks cash','dealer financing','bank loan','mix of financing']),
+    };
+    p.disc = generated;
+    p.knownPain = generated.pain;
+    p.knownDecisionMakers = [...generated.decisionMakers];
+    p.discoveryDone = true;
+    p.trust = clamp(p.trust+2);
+    advanceStage(p,'discovery_done','Discovery complete — profile built from conversation');
+    p.nextFollowUp = G.day+rnd(2,4);
+    p.history = p.history||[];
+    p.history.push({day:G.day, event:'Discovery: '+generated.pain.substring(0,50)});
+    addFeed(p.name+': full discovery — profile unlocked');
+    engageResult(p,'Discovery — '+p.name,
+      'Good 30-minute call. Full picture unlocked.',
+      'Stage: Discovery Done',
+      'You now have their pain, accountant, decision makers, and timeline. Build a targeted proposal.',
+      true, generated);
+    return;
+  }
+
+  if(p.discoveryDone){
+    engageResult(p,'Discovery Already Done',
+      'You already ran discovery with this prospect. Their situation is on file. Build the proposal.',
+      'Use "Build the proposal" as your next action.','');
+    return;
+  }
+
+  const roll=Math.random();
+  let quality='full';
+  if(roll<0.15){
+    quality='blocked';
+    p.history.push({day:G.day,event:'Discovery blocked — emergency, reschedule needed'});
+    advanceStage(p,'discovery_scheduled','Reschedule needed — emergency came up');
+    p.nextFollowUp=G.day+rnd(2,5);
+    engageResult(p,'Discovery Blocked — '+p.name,
+      'Emergency came up. Call cut short after 8 minutes. Reschedule for next week.',
+      '','Happens. Reschedule same day — "No problem at all. Same time next week?"');
+    return;
+  } else if(roll<0.40){quality='partial';}
+
+  // Reveal discovery info
+  if(quality==='full'){
+    p.disc={...(_d)};
+    p.knownPain=_d.pain;
+    p.knownDecisionMakers=[..._d.decisionMakers];
+    p.knownObjections=[_d.accountantStance];
+    p.trust=clamp(p.trust+2);
+    p.discoveryDone=true;
+    advanceStage(p,'discovery_done','Full discovery completed — all info unlocked');
+    p.nextFollowUp=G.day+rnd(2,5);
+    p.history.push({day:G.day,event:'Full discovery: pain='+_d.pain.substring(0,40)});
+
+    engageResult(p,'Full Discovery — '+p.name,
+      'Full picture unlocked.',
+      'Stage advanced: Discovery Done',
+      'You now know their pain, accountant, decision makers, and timeline. Build a targeted proposal.',
+      true,_d);
+  } else {
+    p.disc={..._d,pain:'[Partial — probe further on next call]'};
+    p.trust=clamp(p.trust+1);
+    advanceStage(p,'discovery_done','Partial discovery — need follow-up');
+    p.history.push({day:G.day,event:'Partial discovery — guarded on financials'});
+    engageResult(p,'Partial Discovery — '+p.name,
+      'Got fleet info and surface pain. They were guarded on financials and accountant details. Not enough for a strong proposal yet.',
+      'Do a second discovery call to get the full picture.',
+      'A proposal without full discovery converts at a fraction of the rate.');
+  }
+}
+
+// ─── BUILD PROPOSAL ──────────────────────────────────────────
+function handleBuildProposal(p){
+  if(!p.discoveryDone||!p.disc){showModal('Cannot Build','<div class="rb rb-e">Run discovery first. A proposal without it converts at a fraction of the rate.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;}
+  const disc=p.disc;
+  const vehicleCount=Math.min(p.fleetSize,rnd(Math.ceil(p.fleetSize*0.4),Math.ceil(p.fleetSize*0.8)));
+  const term=pick([36,48,60]);
+  const basePayment=rnd(650,1150);
+  const totalMonthly=vehicleCount*basePayment;
+  const repairOffset=rnd(800,2500)*vehicleCount;
+  const isPrelim=!disc.timeline||disc.urgency<6;
+  p.proposalBuilt=true;p.proposalData={vehicleCount,term,basePayment,totalMonthly,repairOffset,isPrelim};
+  advanceStage(p,'proposal_ready','Proposal built: '+vehicleCount+' vehicles, '+term+'-mo TRAC');
+  p.trust=clamp(p.trust+1);p.nextFollowUp=G.day+rnd(1,2);
+  p.history.push({day:G.day,event:(isPrelim?'Preliminary':'Targeted')+' proposal — '+vehicleCount+' vehicles'});G.rep.au=clamp(G.rep.au+1);
+  addFeed(p.name+': proposal built ('+(isPrelim?'preliminary':'targeted')+')');
+  showModal((isPrelim?'Preliminary':'Targeted')+' Proposal — '+p.name,
+    '<div style="background:#f0f6ff;border:1px solid #a8c4f0;border-radius:9px;padding:12px;margin-bottom:10px">'+
+    '<div style="font-weight:600;margin-bottom:8px;color:#0a66c2">'+(isPrelim?'PRELIMINARY':'TARGETED')+' TRAC LEASE PROPOSAL</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">'+
+    '<div><div style="color:#aeaeb2;font-size:10px">VEHICLES</div><div style="font-weight:600">'+vehicleCount+' of '+p.fleetSize+'</div></div>'+
+    '<div><div style="color:#aeaeb2;font-size:10px">TERM</div><div style="font-weight:600">'+term+'-month TRAC</div></div>'+
+    '<div><div style="color:#aeaeb2;font-size:10px">EST. PAYMENT/VEH</div><div style="font-weight:600">'+fmt(basePayment)+'/mo</div></div>'+
+    '<div><div style="color:#aeaeb2;font-size:10px">TOTAL MONTHLY</div><div style="font-weight:600">'+fmt(totalMonthly)+'/mo</div></div>'+
+    '<div><div style="color:#aeaeb2;font-size:10px">REPAIR OFFSET</div><div style="font-weight:600;color:#1a7f4b">~'+fmt(repairOffset)+'/yr</div></div>'+
+    '<div><div style="color:#aeaeb2;font-size:10px">CREDIT PROFILE</div><div style="font-weight:600">'+disc.creditRisk+'</div></div></div>'+
+    '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e5e5ea;font-size:11px;color:#6e6e73">'+
+    'Pain: '+disc.pain+'<br>DM: '+disc.decisionMakers[0]+'<br>Accountant: '+disc.accountant+'</div></div>'+
+    (isPrelim?'<div class="insight">Preliminary — present as a starting point, not a final offer.</div>':'<div class="insight">Targeted proposal using their actual data. Present within 48 hours.</div>')+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Present it</button><button onclick="closeModal()">Refine first</button></div>');
+}
+
+
+function handlePresentProposal(p){
+  if(!p.proposalBuilt){showModal('Cannot Present','<div class="rb rb-e">Build the proposal first.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;}
+  if(p.stage==='proposal_ready'){
+    const roll=Math.random();
+    let outcome,coaching='',newStage=p.stage;
+    if(roll<0.25){outcome='"How long does this take?" — Buying question.';newStage='negotiation';p.trust=clamp(p.trust+2);coaching='Answer precisely: 3-5 weeks from approval to delivery. Then ask for the credit app.';}
+    else if(roll<0.45){outcome='They want their accountant to review first.';newStage='objection_handling';p.objectionType='cpa';p.locked=true;p.lockedReason='CPA reviewing';p.lockedUntil=G.day+rnd(5,10);coaching='Offer to join the CPA call directly.';}
+    else if(roll<0.60){outcome='"The monthly is higher than we budgeted."';newStage='objection_handling';p.objectionType='payment';coaching='Ask: compared to what? Then show repair costs vs. payment.';}
+    else if(roll<0.72){outcome='"Need to run this by my partner."';newStage='objection_handling';p.objectionType='partner';coaching='Get all three on a 15-min call.';}
+    else if(roll<0.82){outcome='"We are getting a couple other quotes."';newStage='objection_handling';p.objectionType='competition';coaching='Ask what they are comparing on.';}
+    else{outcome='"Let us think about it."';newStage='objection_handling';p.objectionType='timing';p.nextFollowUp=G.day+rnd(3,7);coaching='Find the real reason. Thinking about it is a pause, not an objection.';}
+    advanceStage(p,newStage,'Proposal presented: '+outcome.substring(0,40));
+    p.history.push({day:G.day,event:'Proposal presented — '+outcome.substring(0,50)});
+    addFeed(p.name+': proposal presented');
+    engageResult(p,'Proposal Presented',outcome,'Stage: '+STAGE_LABEL[p.stage],coaching);
+  } else if(p.stage==='objection_handling'){
+    if(p.objectionType==='cpa'||p.objectionType==='partner'){
+      showModal('Wrong Action','<div class="rb rb-n">Their concern is '+p.objectionType+' approval — not proposal content. Use CPA call or schedule a decision call instead.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;
+    }
+    p.trust=clamp(p.trust+0.5);
+    engageResult(p,'Re-Presentation','Walked through revised structure.','','Show revised term for payment objection, total value for competition.');
+  }
+}
+
+
+function handleCPACall(p){
+  const taxKnow=G.productKnowledge.tax;
+  if(taxKnow<45){
+    p.trust=clamp(p.trust-2);p.dealHealth=clamp(p.dealHealth-15);
+    p.history.push({day:G.day,event:'CPA call — credibility damage (tax knowledge '+taxKnow+'%)'});
+    showModal('CPA Call — Credibility Damage',
+      '<div class="rb rb-e"><div class="rbt">Tax knowledge too low ('+taxKnow+'%)</div>'+
+      'The CPA asked about ASC 842 treatment and whether this qualifies as an operating lease. You did not have a clean answer. You could hear it in your voice. The CPA told the owner to review it more carefully.'+
+      '<div class="insight">Study tax treatment before CPA calls. One bad answer to a CPA can kill a deal that was almost closed.</div></div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+    return;
+  }
+  const roll=Math.random();
+  if(roll<0.45){
+    advanceStage(p,'negotiation','CPA approved — deal unblocked');
+    p.locked=false;p.trust=clamp(p.trust+2);
+    p.history.push({day:G.day,event:'CPA endorsed proposal — deal unblocked'});
+    engageResult(p,'CPA Call — Deal Unblocked',
+      'Tax knowledge ('+taxKnow+'%) held up. CPA asked sharp questions about ASC 842 and depreciation timing. You answered each one. CPA told the owner: "This structure makes sense for your tax situation."',
+      'Stage: Negotiation — deal is moving.',
+      'A CPA who endorses your proposal removes the owner\'s last excuse to hesitate.');
+  } else if(roll<0.75){
+    p.trust=clamp(p.trust+1);
+    p.history.push({day:G.day,event:'CPA wants documentation on TRAC structure'});
+    engageResult(p,'CPA Call — Needs Documentation',
+      'CPA asked good questions. Not convinced but not hostile. Asked for written documentation on TRAC residual treatment.',
+      'Send documentation same day.',
+      'Speed of follow-up after a CPA question signals your professionalism.');
+  } else {
+    p.trust=clamp(p.trust-1);
+    p.stage='dormant';p.locked=true;p.lockedReason='CPA blocked deal';p.lockedUntil=G.day+rnd(14,30);
+    p.history.push({day:G.day,event:'CPA blocked deal — old school, prefers buying'});
+    engageResult(p,'CPA — Blocked Deal',
+      '"We have always bought our vehicles and it has worked fine." Owner defers to him completely.',
+      'Moved to dormant — give it 30 days.',
+      'Some CPAs will never recommend leasing. Know when to move on.');
+  }
+  addFeed(p.name+': CPA call (tax: '+taxKnow+'%)');
+}
+
+// ─── DOC CHASE ───────────────────────────────────────────────
+function handleDocChase(p){
+  if(!p.docStage) p.docStage='requested';
+  const daysSince=p.closedDay?G.day-p.closedDay:0;
+  if(daysSince>14&&p.docStage!=='responsive'&&p.docStage!=='partial') p.docStage='dead';
+  else if(daysSince>7&&p.docStage==='stalled') p.docStage='ghosted';
+  else if(daysSince>5&&p.docStage==='delayed') p.docStage='stalled';
+  else if(daysSince>3&&p.docStage==='reminded') p.docStage='delayed';
+  else if(daysSince>1&&p.docStage==='requested') p.docStage='reminded';
+  const cfgs={requested:{lbl:'Requested',cls:'rb-s',act:'Follow up in 48 hours if no response.'},reminded:{lbl:'Reminded',cls:'rb-n',act:'2 more days, then call about one specific missing doc.'},delayed:{lbl:'Delayed ⚠️',cls:'rb-n',act:'Ask for one doc right now while on the phone.'},stalled:{lbl:'Stalled 🔴',cls:'rb-e',act:'Be direct: what is the hold-up?'},ghosted:{lbl:'Ghosted 🔴',cls:'rb-e',act:'One final attempt, then mark lost.'},dead:{lbl:'Dead Deal',cls:'rb-e',act:'14+ days — mark lost or make one final call.'},responsive:{lbl:'Responsive',cls:'rb-s',act:'Keep momentum — confirm outstanding items.'},partial:{lbl:'Partial Docs',cls:'rb-s',act:'List exactly what is missing.'},wrong:{lbl:'Wrong Docs',cls:'rb-n',act:'"I need business returns for the LLC, not personal 1040."'}};
+  const events=[{o:'responsive',m:'Credit app filled and sent over.'},{o:'partial',m:'Got app and one year of returns. Still need YTD and entity docs.'},{o:'wrong',m:'They sent personal tax returns. Need business returns for the LLC.'},{o:'delayed',m:'"Our accountant has been backed up. She said next week."'},{o:'stalled',m:'No response to three follow-ups.'},{o:'responsive',m:'They apologized — had a crazy week. Docs coming tonight.'}];
+  const ev=pick(events);
+  if(['responsive','partial','wrong'].includes(ev.o)) p.docStage=ev.o;
+  const cfg=cfgs[p.docStage]||cfgs.requested;
+  p.docStatus=cfg.lbl+' — Day '+G.day;p.history.push({day:G.day,event:'Doc chase ('+p.docStage+'): '+ev.m});p.nextFollowUp=G.day+2;p.lastActionDay=G.day;
+  const ub=daysSince>=14?'<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:7px;padding:8px 12px;font-size:11px;color:#dc2626;margin-bottom:8px;font-weight:600">🔴 HIGH LOSS RISK — '+daysSince+' days since verbal yes.</div>':daysSince>=7?'<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:8px 12px;font-size:11px;color:#c2410c;margin-bottom:8px">🟠 '+daysSince+' days outstanding.</div>':daysSince>=3?'<div style="background:#fff8e1;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;font-size:11px;color:#b45309;margin-bottom:8px">⚠️ '+daysSince+' days since verbal yes.</div>':'';
+  addFeed(p.name+': doc chase — '+p.docStage);
+  showModal('Doc Chase — '+p.name,ub+'<div class="'+cfg.cls+'" style="margin-bottom:8px"><div class="rbt">Status: '+cfg.lbl+'</div>'+ev.m+'<div class="insight">'+cfg.act+'</div></div><div style="padding:8px 12px;background:#fff8e1;border:1px solid #fde68a;border-radius:7px;font-size:11px;line-height:1.8;margin-bottom:8px"><b>Outstanding:</b> Credit app · Business returns · YTD P&L · Entity docs · Insurance cert · Fleet list</div><div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button><button onclick="markDocReceived(\''+p.id+'\');closeModal()">Mark docs received</button><button onclick="markLost(\''+p.id+'\');closeModal()" style="color:#d93025;border-color:#d93025">Mark lost</button></div>');
+}
+function markDocReceived(id){const p=G.pipe.find(x=>x.id===id);if(!p)return;p.stage='docs_received';p.docStage='responsive';p.history.push({day:G.day,event:'Docs received'});addFeed(p.name+': docs received');updateUI();}
+
+
+function markLost(id){
+  const p=G.pipe.find(x=>x.id===id);if(!p)return;
+  p.stage='closed_lost';p.note='Marked lost: doc stall';
+  p.history.push({day:G.day,event:'Marked closed lost — doc stall'});
+  addFeed(p.name+': marked closed lost — doc stall');
+  updateUI();
+}
+
+// ─── ADMIN / LOG NOTE ────────────────────────────────────────
+function handleAdmin(p){
+  const daysOptions=[3,5,7,10,14];
+  const followUpIn=pick(daysOptions);
+  p.nextFollowUp=G.day+followUpIn;
+  p.history.push({day:G.day,event:'Note logged — follow-up set Day '+p.nextFollowUp});
+  // Refund 1 AP since admin is essentially free overhead
+  G.ap=Math.min(G.apMax,G.ap+1);updateAPBar();
+  showModal('Note Logged',
+    '<div class="rb rb-n">Note logged. Follow-up reminder set for Day '+p.nextFollowUp+'.</div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+  addFeed(p.name+': note logged');
+}
+
+// ─── CLOSE HANDLER ───────────────────────────────────────────
+function handleCloseAttempt(p){
+  if(!p.closeAttempts) p.closeAttempts=0;
+  if(!p.lastCloseDay) p.lastCloseDay=0;
+  if(p.lastCloseDay===G.day&&p.closeAttempts>0){
+    p.irritation=clamp(p.irritation+2,0,10);p.trust=clamp(p.trust-1);p.dealHealth=clamp(p.dealHealth-10);
+    showModal('Too Pushy','<div class="rb rb-e">You already asked today. Asking again signals desperation. Trust -1.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+    updateUI();return;
+  }
+  if(G.conf<35){showModal('Not Ready','<div class="rb rb-n">Confidence '+Math.round(G.conf)+'/100. Build momentum first.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;}
+  if(p.trust<3){showModal('Not Ready','<div class="rb rb-n">Trust '+p.trust+'/5. More follow-up needed.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;}
+  if(!['proposal_presented','objection_handling','negotiation','approved'].includes(p.stage)){showModal('Not Ready','<div class="rb rb-n">Present the proposal before asking for business.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');return;}
+  p.closeAttempts++;p.lastCloseDay=G.day;
+  const urgency=p.disc?p.disc.urgency:5;
+  const closeProb=Math.min(0.65,(p.trust/5)*0.35+(urgency/10)*0.30+(G.conf/100)*0.20+(p.stage==='negotiation'?0.15:0)-(p.irritation*0.03));
+  const roll=Math.random();
+  if(roll<closeProb){
+    p.stage='verbal_yes';p.closedDay=G.day;p.trust=5;p.closeAttempts=0;
+    p.docStatus='credit app not yet sent';p.nextFollowUp=G.day+1;
+    const d=pick(DEAL_TEMPLATES);
+    const totalGP=d.veh*(d.gp+rnd(-150,150));
+    const comm=addComm(totalGP);
+    G.gp+=totalGP;G.deals++;G.veh+=d.veh;G.mom=clamp(G.mom+20);G.conf=clamp(G.conf+12);G.burnout=clamp(G.burnout-8);G.mgp+=totalGP;G.mdeals++;
+    p.history.push({day:G.day,event:'VERBAL YES — '+d.veh+' vehicles, '+fmt(totalGP)+' GP'});
+    addFeed('🤝 VERBAL YES: '+p.name+' — '+fmt(totalGP)+' GP — GET DOCS NOW');
+    showModal('Verbal Yes — '+p.name,
+      '<div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:14px;margin-bottom:10px">'+
+      '<div style="font-size:10px;color:#6e6e73;margin-bottom:4px;font-weight:600">VERBAL YES ⚠️ NOT CLOSED — DOCS NEEDED</div>'+
+      '<div style="font-size:32px;font-weight:700;color:#1a7f4b">'+fmt(totalGP)+'</div>'+
+      '<div style="font-size:12px;color:#6e6e73">'+d.veh+' vehicles · '+d.term+'-month '+d.type+' · Commission: '+fmt(comm)+'</div></div>'+
+      '<div style="padding:10px;background:#fff8e1;border:1px solid #fde68a;border-radius:8px;font-size:11px;line-height:1.9;margin-bottom:8px">'+
+      '<b>Docs needed today:</b> Credit app · 2yr returns · YTD · Entity docs · Insurance cert · Fleet list</div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">Start doc collection</button></div>');
+  } else {
+    const outcomes=[
+      {label:'Needs partner sign-off',note:'"Need to loop in my partner on anything big."',action:'Get all three on a 15-min call.',lock:rnd(3,7)},
+      {label:'Needs CPA review',note:'"My accountant wants to look at this first."',action:'Offer to be on the CPA call directly.',lock:rnd(4,8),oType:'cpa'},
+      {label:'Getting competitor quote',note:'"Looking at a couple options."',action:'Ask what they are comparing on.',lock:rnd(5,10),oType:'competition'},
+      {label:'Cash flow timing',note:'"Q4 works much better for us."',action:'Offer Q4 start with current pricing locked.',lock:rnd(14,30),oType:'timing'},
+      {label:'Sleeping on it',note:'"Give us 48 hours."',action:'Send the credit app so you are ready when they say yes.',lock:2},
+      {label:'Not yet',note:'"Not quite ready."',action:'"What would need to be true for this to be a yes?"',lock:rnd(3,7),trustDelta:-0.5,irritDelta:1},
+    ];
+    const o=pick(outcomes);
+    p.note=o.note;p.nextFollowUp=G.day+o.lock;
+    if(o.lock>2){p.locked=true;p.lockedReason=o.label;p.lockedUntil=G.day+o.lock;}
+    p.irritation=clamp(p.irritation+(o.irritDelta||0),0,10);p.trust=clamp(p.trust+(o.trustDelta||0));
+    if(o.oType) p.objectionType=o.oType;
+    p.history.push({day:G.day,event:'Close attempt — '+o.label});
+    addFeed(p.name+': close attempt — '+o.label);
+    engageResult(p,'Not Yet',o.note,'Follow up in '+o.lock+' days.',o.action);
+  }
+  updateUI();
+}
+
+
+function engageResult(p,title,outcome,stageNote,coaching,showDiscovery,discData){
+  const stageColor=STAGE_COL[p.stage]||'#aeaeb2';
+  let discSection='';
+  if(showDiscovery&&discData){
+    discSection='<div style="background:#f0faf4;border:1px solid #86d8a8;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px">'+
+      '<div style="font-weight:600;margin-bottom:6px;color:#1a7f4b">Discovery unlocked — full picture:</div>'+
+      '<div><b>Pain:</b> '+discData.pain+'</div>'+
+      '<div><b>Cash flow:</b> '+discData.cashFlow+'</div>'+
+      '<div><b>Accountant:</b> '+discData.accountant+' — '+discData.accountantStance+'</div>'+
+      '<div><b>Timeline:</b> '+discData.timeline+'</div>'+
+      '<div><b>Urgency:</b> '+discData.urgency+'/10</div>'+
+      '<div><b>Decision makers:</b> '+discData.decisionMakers.join(', ')+'</div>'+
+      '<div><b>Current financing:</b> '+discData.currentFinancing+'</div></div>';
+  }
+  showModal(title,
+    '<div class="rb rb-n" style="margin-bottom:8px">'+outcome+'</div>'+
+    discSection+
+    (stageNote?'<div style="font-size:11px;font-weight:600;color:'+stageColor+';margin-bottom:6px">'+stageNote+'</div>':'')+
+    (coaching?'<div class="insight" style="margin-bottom:8px">'+coaching+'</div>':'')+
+    '<div style="font-size:10px;color:#aeaeb2">Trust: '+p.trust+'/5 · Touches: '+p.touches+' · Stage: '+STAGE_LABEL[p.stage]+'</div>'+
+    '<div class="brow">'+
+    '<button class="btn-primary" onclick="closeModal()">Continue</button>'+
+    '<button onclick="closeModal();switchNavById(\'engage\')">Back to Engage</button></div>'
+  );
+}
+
+// ─── WEEKEND ─────────────────────────────────────────────────
+const WKND_OUT={
+  rest:{h:'Rest day — recharged',n:'Fully rested. Ready for Monday.',c:'Recovery is not laziness. Reps who ignore it burn out by month 4.',sd:{b:-28,e:20,cf:5,m:0}},
+  workout:{h:'Barton Creek — 6 miles',n:'5am run. Podcast. Showered by 7:30.',c:'Physical and mental discipline compound together.',sd:{b:-30,e:22,cf:8,m:5}},
+  connect:{h:'Golf — organic networking',n:'18 holes. No pitching. Buddy mentioned a roofing company with 12 old trucks.',c:'Referrals feel like luck. They are relationship dividends.',sd:{b:-10,e:5,cf:5,m:8}},
+  post:{h:'Saturday LinkedIn post',n:'Educational content. Good weekend engagement.',c:'Consistent content builds the awareness that generates inbound.',sd:{b:-5,e:0,cf:3,m:5},rep:{so:5,aw:3}},
+  go_out:{h:'Night out — South Congress',n:'Good time. Spent $185.',c:'Social capital is real.',sd:{b:-8,e:-5,cf:7,m:4},cashCost:185},
+  study:{h:'Pipeline review + week prep',n:'Two hours mapping follow-ups. Head is clear for Monday.',c:'Reviewing pipeline on weekends turns Monday into execution.',sd:{b:-5,e:5,cf:5,m:10},rep:{au:2}},
+};
+function weekendAct(type){
+  if(G.weekendUsed){
+    showModal('Done','<div class="rb rb-n">Weekend slot used.</div><div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+    return;
+  }
+  const apCost=2;
+  if(!useAP(apCost))return;
+  G.weekendUsed=true;
+  const r=WKND_OUT[type];if(!r)return;
+  if(r.sd){G.burnout=clamp(G.burnout+(r.sd.b||0));G.ener=clamp(G.ener+(r.sd.e||0));G.conf=clamp(G.conf+(r.sd.cf||0));G.mom=clamp(G.mom+(r.sd.m||0));}
+  if(r.rep)Object.entries(r.rep).forEach(([k,v])=>{G.rep[k]=clamp((G.rep[k]||0)+v);});
+  if(r.cashCost)G.banks.checking.bal-=r.cashCost;
+  addFeed('🌅 '+r.h);updateUI();
+  showModal(r.h,
+    '<div class="rb rb-s">'+r.n+'<div class="insight">'+r.c+'</div></div>'+
+    (r.cashCost?'<div style="font-size:11px;color:#d93025;margin-top:4px">-$'+r.cashCost+' from checking</div>':'')+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Continue</button>'+
+    '<button onclick="closeModal();endDay()">Finish Day</button></div>');
+}
+
+// ─── CRM ─────────────────────────────────────────────────────
+function renderCRM(){
+  const el=document.getElementById('crm-list');if(!el)return;
+  // Stage counts
+  const groups=[
+    {lbl:'Prospecting',stages:['first_touch','connected'],id:'pm-lead'},
+    {lbl:'Discovery',stages:['discovery_scheduled','discovery_done','qualified'],id:'pm-warm'},
+    {lbl:'Proposal',stages:['proposal_building','proposal_ready','proposal_presented','objection_handling'],id:'pm-prop'},
+    {lbl:'Negotiation',stages:['negotiation','cpa_review'],id:null},
+    {lbl:'Closing',stages:['verbal_yes','docs_requested','docs_received','underwriting','approved'],id:'pm-stall'},
+    {lbl:'Won',stages:['funded','closed_won'],id:'pm-closed'},
+  ];
+  groups.forEach(g=>{
+    const c=G.pipe.filter(p=>g.stages.includes(p.stage)).length;
+    if(g.id){const el2=document.getElementById(g.id);if(el2)el2.textContent=c;}
+  });
+
+  // Pipeline columns view
+  const allStageGroups=[
+    {title:'Prospecting',stages:['first_touch','connected'],color:'#6e6e73'},
+    {title:'Discovery',stages:['discovery_scheduled','discovery_done','qualified'],color:'#0a66c2'},
+    {title:'Proposal',stages:['proposal_building','proposal_ready','proposal_presented','objection_handling'],color:'#7c3aed'},
+    {title:'Negotiation',stages:['negotiation'],color:'#b45309'},
+    {title:'Docs Outstanding',stages:['verbal_yes','docs_requested'],color:'#e74c3c'},
+    {title:'Underwriting',stages:['docs_received','underwriting','approved'],color:'#27ae60'},
+    {title:'Closed Won',stages:['funded','closed_won'],color:'#1a7f4b'},
+    {title:'Closed Lost',stages:['closed_lost'],color:'#d93025'},
+    {title:'Dormant',stages:['dormant'],color:'#aeaeb2'},
+  ];
+
+  el.innerHTML='<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px">'+
+    allStageGroups.map(g=>{
+      const prospects=G.pipe.filter(p=>g.stages.includes(p.stage));
+      return '<div style="min-width:160px;flex-shrink:0">'+
+        '<div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:'+g.color+';margin-bottom:6px;text-transform:uppercase">'+
+        g.title+' ('+prospects.length+')</div>'+
+        (prospects.length?prospects.map(p=>
+          '<div style="background:#fff;border:1px solid #e5e5ea;border-radius:7px;padding:7px 9px;margin-bottom:5px;border-left:3px solid '+g.color+'">'+
+          '<div style="font-weight:600;font-size:11px">'+p.emoji+' '+p.name+'</div>'+
+          '<div style="font-size:10px;color:#6e6e73">'+p.industry+' · '+p.loc+'</div>'+
+          '<div style="font-size:10px;color:#aeaeb2">Trust: '+p.trust+'/5 · T:'+p.touches+
+          (p.nextFollowUp&&p.nextFollowUp<=G.day?'<span style="color:#d93025"> ⏰</span>':'')+
+          (p.locked?'<span style="color:#d93025"> 🔒</span>':'')+
+          '</div></div>'
+        ).join(''):'<div style="font-size:11px;color:#aeaeb2;padding:8px 0">Empty</div>')+
+        '</div>';
+    }).join('')+'</div>';
+}
+
+// ─── FOLLOW-UPS ──────────────────────────────────────────────
+function renderFollowups(){
+  const el=document.getElementById('fu-list');if(!el)return;
+  const due=G.pipe.filter(p=>p.nextFollowUp&&p.nextFollowUp<=G.day&&
+    !['closed_won','closed_lost','prospect'].includes(p.stage)&&!p.locked);
+  const nbF=document.getElementById('nb-f');if(nbF)nbF.textContent=due.length;
+  if(!due.length){
+    el.innerHTML='<div style="color:#aeaeb2;text-align:center;padding:2rem;font-size:12px">No follow-ups due. You are ahead.</div>';
+    return;
+  }
+  el.innerHTML=due.map(p=>{
+    const daysSince=G.day-p.nextFollowUp;
+    const urgColor=daysSince>7?'#dc2626':daysSince>3?'#c2410c':'#b45309';
+    return '<div class="pcard"><div class="prow">'+
+      '<span style="font-size:15px">'+p.emoji+'</span>'+
+      '<div style="flex:1"><div style="font-weight:500">'+p.name+'</div>'+
+      '<div style="font-size:10px;color:#6e6e73">'+STAGE_LABEL[p.stage]+' · Due Day '+p.nextFollowUp+'</div></div>'+
+      '<span style="font-size:10px;color:'+urgColor+';font-weight:600">'+(daysSince>0?daysSince+'d overdue':'DUE')+'</span></div>'+
+      '<div style="font-size:11px;color:#6e6e73;margin-top:3px">'+p.note.substring(0,60)+'</div>'+
+      '<div class="brow" style="margin-top:6px"><button onclick="G.activeProspectId=\''+p.id+'\';switchNavById(\'engage\')" style="font-size:11px;padding:5px 10px">Engage now →</button></div>'+
+      '</div>';
+  }).join('');
+}
+
+// ─── FINANCE ─────────────────────────────────────────────────
+function renderBankCards(){
+  const el=document.getElementById('bank-cards');if(!el)return;
+  const colors={checking:'#0a66c2',savings:'#1a7f4b',roth:'#7c3aed',emergency:'#b45309'};
+  const subs={checking:'Primary spending',savings:'Short-term goals',roth:'Retirement (Roth)',emergency:'3-6 months expenses'};
+  el.innerHTML=Object.entries(G.banks).map(([k,b])=>
+    '<div style="background:#f5f5f7;border:1px solid #e5e5ea;border-radius:9px;padding:10px 13px;border-top:3px solid '+colors[k]+'">'+
+    '<div style="font-size:9px;color:#aeaeb2;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">'+b.label+'</div>'+
+    '<div style="font-size:20px;font-weight:600;color:'+(b.bal<0?'#d93025':'#1c1c1e')+'">'+fmt(b.bal)+'</div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:2px">'+subs[k]+'</div></div>'
+  ).join('');
+}
+function renderPayPreview(){
+  const pc=calcPC(G.draw/2,G.lockedComm),he=totalExp()/2,left=pc.net-he;
+  const dtp=Math.max(0,G.nextPayday-G.day);
+  const row=(l,v,c)=>'<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #e5e5ea;font-size:11px"><span style="color:#6e6e73">'+l+'</span><span style="color:'+(c||'#1c1c1e')+'">'+v+'</span></div>';
+  const pp=document.getElementById('pay-preview');
+  if(pp)pp.innerHTML='<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Next payday: <b>Day '+G.nextPayday+'</b> ('+dtp+' days)</div>'+
+    row('Base draw (half month)',fmt(G.draw/2))+row('Locked commission',fmt(G.lockedComm),'#1a7f4b')+
+    row('Federal (22%)','-'+fmt(pc.fed),'#d93025')+row('SS + Medicare','-'+fmt(pc.ss+pc.mcare),'#d93025')+
+    row('Texas state tax','$0','#1a7f4b')+row('Expenses (half)','-'+fmt(he),'#d93025')+
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px"><span>Leftover</span><span style="color:'+(left>=0?'#1a7f4b':'#d93025')+'">'+(left>=0?fmt(left):'-'+fmt(-left))+'</span></div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:5px">Pending (closes 5th): <span style="color:#b45309">'+fmt(G.pendingComm)+'</span></div>';
+  const ep=document.getElementById('exp-preview');
+  if(ep)ep.innerHTML='<div style="font-size:10px;color:#aeaeb2;margin-bottom:6px">Monthly: <span style="color:#d93025">'+fmt(totalExp())+'</span></div>'+
+    Object.entries(G.expenses).map(([k,v])=>row(k.charAt(0).toUpperCase()+k.slice(1),'-'+fmt(v/2)+'/check','#d93025')).join('')+
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:600;font-size:11px"><span>Net take-home</span><span style="color:'+(left>=0?'#1a7f4b':'#d93025')+'">'+(left>=0?fmt(left):'-'+fmt(-left))+'</span></div>';
+}
+function triggerPayday(){
+  const pc=calcPC(G.draw/2,G.lockedComm),he=totalExp()/2,left=Math.max(0,pc.net-he);
+  const paid=G.lockedComm;
+  G.banks.checking.bal+=pc.net;G.banks.checking.bal-=he;
+  G.lockedComm=0;G.nextPayday+=15;
+  G.paychecks.push({day:G.day,net:pc.net,comm:paid});
+  addFeed('💰 PAYDAY — Net '+fmt(pc.net)+' deposited');
+  const row=(l,v,c)=>'<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #e5e5ea;font-size:12px"><span style="color:#6e6e73">'+l+'</span><span style="color:'+(c||'#1c1c1e')+'">'+v+'</span></div>';
+  showModal('Payday — Day '+G.day,
+    '<div style="text-align:center;margin-bottom:12px">'+
+    '<div style="font-size:38px;font-weight:700;color:#1a7f4b">'+fmt(pc.net)+'</div>'+
+    '<div style="font-size:12px;color:#6e6e73">deposited to Checking</div></div>'+
+    '<div style="background:#f5f5f7;border-radius:8px;padding:10px 12px;margin-bottom:12px">'+
+    row('Draw (half month)',fmt(G.draw/2))+row('Commission (33% GP)',fmt(paid),'#1a7f4b')+
+    row('Federal Tax (22%)','-'+fmt(pc.fed),'#d93025')+
+    row('Social Security (6.2%)','-'+fmt(pc.ss),'#d93025')+
+    row('Medicare (1.45%)','-'+fmt(pc.mcare),'#d93025')+
+    row('Texas State Tax','$0','#1a7f4b')+
+    row('Expenses (half month)','-'+fmt(he),'#d93025')+
+    '<div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:600;font-size:12px"><span>Leftover</span><span style="color:#1a7f4b">'+fmt(left)+'</span></div></div>'+
+    '<div style="font-size:12px;font-weight:600;margin-bottom:6px">Allocate leftover</div>'+
+    '<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Savings</span><input id="al-sav" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Roth IRA</span><input id="al-roth" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div>'+
+    '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#6e6e73;width:120px">Emergency</span><input id="al-eme" type="number" min="0" value="0" style="border:1px solid #e5e5ea;border-radius:6px;padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none"></div></div>'+
+    '<div class="brow">'+
+    '<button style="background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit;font-weight:600" onclick="confirmAlloc('+left+')">Confirm</button>'+
+    '<button onclick="closeModal()">Leave in Checking</button></div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:8px">Next pay: Day '+G.nextPayday+' · Pending: '+fmt(G.pendingComm)+'</div>'
+  );
+}
+function confirmAlloc(left){
+  const s=Math.min(parseFloat(document.getElementById('al-sav').value)||0,left);
+  const r=Math.min(parseFloat(document.getElementById('al-roth').value)||0,left-s);
+  const e=Math.min(parseFloat(document.getElementById('al-eme').value)||0,left-s-r);
+  G.banks.savings.bal+=s;G.banks.roth.bal+=r;G.banks.emergency.bal+=e;
+  G.banks.checking.bal-=(s+r+e);
+  closeModal();updateUI();
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────
+function renderDashboard(){
+  const hp=document.getElementById('d-health');
+  if(hp){
+    const groups=[
+      {lbl:'Prospecting',stages:['first_touch','connected'],c:'#6e6e73'},
+      {lbl:'Discovery',stages:['discovery_scheduled','discovery_done','qualified'],c:'#0a66c2'},
+      {lbl:'Proposal',stages:['proposal_building','proposal_ready','proposal_presented','objection_handling'],c:'#7c3aed'},
+      {lbl:'Negotiation',stages:['negotiation'],c:'#b45309'},
+      {lbl:'Docs/UW',stages:['verbal_yes','docs_requested','docs_received','underwriting','approved'],c:'#e74c3c'},
+      {lbl:'Won',stages:['funded','closed_won'],c:'#1a7f4b'},
+    ];
+    const active=G.pipe.filter(p=>!['prospect','closed_won','closed_lost','dormant'].includes(p.stage));
+    hp.innerHTML=active.length?groups.map(g=>{
+      const c=G.pipe.filter(p=>g.stages.includes(p.stage)).length;
+      return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:11px">'+
+        '<span style="width:75px;color:'+g.c+'">'+g.lbl+'</span>'+
+        '<div style="flex:1;height:7px;background:#e5e5ea;border-radius:4px;overflow:hidden">'+
+        '<div style="height:100%;width:'+Math.min(100,c*15)+'%;background:'+g.c+';border-radius:4px"></div></div>'+
+        '<span style="color:#aeaeb2;width:15px;text-align:right">'+c+'</span></div>';
+    }).join(''):'<div style="color:#aeaeb2;font-size:12px">No active pipeline yet.</div>';
+  }
+  const mp=document.getElementById('d-monthly');
+  if(mp&&G.monthly.length){
+    const mx=Math.max(...G.monthly.map(m=>m.gp),1);
+    mp.innerHTML=G.monthly.map(m=>
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;font-size:11px">'+
+      '<span style="width:26px;color:#aeaeb2">'+m.m+'</span>'+
+      '<div style="flex:1;height:10px;background:#e5e5ea;border-radius:2px;overflow:hidden">'+
+      '<div style="height:100%;width:'+Math.round((m.gp/mx)*100)+'%;background:#0a66c2;border-radius:2px"></div></div>'+
+      '<span style="color:#1a7f4b;width:65px;text-align:right;font-family:monospace">'+fmt(m.gp)+'</span></div>'
+    ).join('');
+  }
+}
+
+// ─── END DAY ─────────────────────────────────────────────────
+function endDay(){
+  checkCutoff();
+
+  // Unlock accounts
+  G.pipe.forEach(p=>{
+    if(p.locked&&p.lockedUntil&&p.lockedUntil<=G.day+1){
+      p.locked=false;p.lockedReason=null;p.lockedUntil=null;
+      p.history.push({day:G.day,event:'Auto-unlocked — follow-up window reopened'});
+      addFeed(p.name+' unlocked — time to follow up');
+    }
+  });
+
+  // Doc stall checks
+  G.pipe.filter(p=>['verbal_yes','docs_requested'].includes(p.stage)&&p.closedDay).forEach(p=>{
+    const days=G.day-p.closedDay;
+    if(days>14&&Math.random()<0.12){
+      p.stage='closed_lost';p.note='Doc stall — went quiet 14+ days after verbal yes';
+      p.history.push({day:G.day,event:'Auto closed lost — doc stall 14+ days'});
+      addFeed('❌ '+p.name+' — marked lost after 14-day doc stall');
+    } else if(days>10&&Math.random()<0.08){
+      p.stage='dormant';p.note='Doc stall — cooling off';
+      addFeed('⚠️ '+p.name+' — moved to dormant after 10-day doc stall');
+    }
+  });
+
+  // Long-horizon pipeline events
+  if(Math.random()<0.06){const dormant=G.pipe.filter(p=>p.stage==='dormant');if(dormant.length){const rp=pick(dormant);rp.stage='connected';rp.locked=false;rp.trust=clamp(rp.trust+1);rp.history.push({day:G.day,event:'Reactivated'});addFeed('🔄 '+rp.name+' reactivated — they reached back out');}}
+  if(G.rep.rf>=20&&Math.random()<0.05){const avail=G.pipe.filter(p=>p.stage==='prospect');if(avail.length){const rp=avail[Math.floor(Math.random()*avail.length)];rp.stage='connected';rp.trust=3;rp.note='Inbound referral';rp.history.push({day:G.day,event:'Inbound referral'});addFeed('🔗 Inbound referral: '+rp.name);}}
+  if(G.day>30&&G.deals===0&&Math.random()<0.04) addFeed('📉 No closed deals yet — review your proposal-stage prospects.');
+  if(G.day%30===0) addFeed('📅 End of month — any verbal closes in doc stage? Push for funded.');
+  const n=G.today.reduce((s,v)=>s+1,0);
+  const apUsed=G.apMax-G.ap;
+  const pct=apUsed/G.apMax;
+  const grade=G.isWeekend?(n>=1?'W':'W'):
+    (pct>=0.8?'A':pct>=0.6?'B':pct>=0.4?'C':pct>=0.2?'D':'F');
+  const gc={A:'#1a7f4b',B:'#0a66c2',C:'#b45309',D:'#d93025',F:'#d93025',W:'#1a7f4b'}[grade];
+  const obs={
+    A:'Full day. Top reps use every AP consistently.',
+    B:'Good effort. Close to maxing out.',
+    C:'Moderate day — consistency compounds over time.',
+    D:'Light day. AP left unused = pipeline not built.',
+    F:'Wasted day.',
+    W:n>=1?'Weekend slot well used.':'Fully rested.',
+  }[grade];
+
+  const docsOpen=G.pipe.filter(p=>['verbal_yes','docs_requested'].includes(p.stage)).length;
+  const proposalsOut=G.pipe.filter(p=>['proposal_ready','proposal_presented'].includes(p.stage)).length;
+  const fueDue=G.pipe.filter(p=>p.nextFollowUp&&p.nextFollowUp<=G.day+1&&
+    !['closed_won','closed_lost','prospect'].includes(p.stage)&&!p.locked).length;
+
+  const tip=docsOpen>0?'Verbal closes with docs outstanding: '+docsOpen+'. Chase docs before anything else tomorrow.':
+    proposalsOut>0?'Proposals out: '+proposalsOut+'. Follow up before they go cold.':
+    fueDue>0?fueDue+' follow-up(s) due — do those first.':
+    G.pipe.filter(p=>!['prospect','closed_won','closed_lost'].includes(p.stage)).length<5?
+    'Pipeline thin. Drive territory or call block first tomorrow.':'Keep building.';
+
+  G.day++;G.slotsUsed=0;G.today=[];G.weekendUsed=false;
+  G.ap=isWknd(G.day)?AP_WEEKEND:AP_PER_DAY;G.apMax=G.ap;
+  G.ener=clamp(G.ener+(G.isWeekend?5:10));G.conf=clamp(G.conf-1);G.mom=clamp(G.mom-2);
+  if(!G.isWeekend)G.disc=clamp(G.disc+(pct>=0.6?2:-1));
+  G.isWeekend=isWknd(G.day);
+
+  // Month transition: every 30 sim days from day 1
+  if(G.day>1 && (G.day-1)%30===0){
+    G.monthly.push({m:MONTHS[G.month]||'?', gp:G.mgp||0, deals:G.mdeals||0});
+    G.month=((G.month||0)+1)%12; G.mgp=0; G.mdeals=0;
+    if(G.monthly.length>=12){showGameOver();return;}
+  }
+  if(G.day>=G.nextPayday){setTimeout(()=>{closeModal();triggerPayday();},300);return;}
+
+  // Refresh context
+  const ctxEl=document.getElementById('ctx-text');
+  if(ctxEl){ctxEl.textContent=pick(JUNE_CONTEXT);ctxEl.dataset.set='1';}
+
+  updateUI();
+  showModal('Day '+(G.day-1)+' Done',
+    '<div style="text-align:center;margin-bottom:10px">'+
+    '<div style="font-size:10px;color:#aeaeb2;letter-spacing:.08em;margin-bottom:3px">DAY GRADE</div>'+
+    '<div style="font-size:44px;font-weight:700;color:'+gc+'">'+grade+'</div>'+
+    '<div style="font-size:11px;color:#6e6e73">'+apUsed+' / '+G.apMax+' AP used</div></div>'+
+    '<div class="rb rb-n" style="margin-bottom:8px">'+obs+'</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">'+
+    '<div class="mc"><div class="mlbl">AP Used</div><div class="mval">'+apUsed+'/'+G.apMax+'</div></div>'+
+    '<div class="mc"><div class="mlbl">Pipeline</div><div class="mval">'+G.pipe.filter(p=>!['prospect','closed_won','closed_lost'].includes(p.stage)).length+'</div></div>'+
+    '<div class="mc"><div class="mlbl">Burnout</div><div class="mval" style="color:'+(G.burnout>=65?'#d93025':'inherit')+'">'+Math.round(G.burnout)+'%</div></div>'+
+    '<div class="mc"><div class="mlbl">Checking</div><div class="mval" style="font-size:12px">'+fmt(G.banks.checking.bal)+'</div></div></div>'+
+    '<div class="insight">'+tip+'</div>'+
+    '<div style="font-size:10px;color:#aeaeb2;margin-top:6px">Locked comm: '+fmt(G.lockedComm)+' · Next pay: Day '+G.nextPayday+'</div>'+
+    '<div class="brow"><button class="btn-primary" onclick="closeModal()">Start Day '+G.day+(G.isWeekend?' ('+dayName(G.day)+')':'')+' →</button></div>'
+  );
+}
+
+// ─── GAME OVER ───────────────────────────────────────────────
+function showGameOver(){
+  const nw=Object.values(G.banks).reduce((s,b)=>s+b.bal,0);
+  const grade=G.gp>120000?'Elite First Year':G.gp>60000?'Solid Rookie Year':G.gp>25000?'Learning Year':'Foundation Built';
+  showModal('Year 1 Complete',
+    '<div style="text-align:center;margin-bottom:12px"><div style="font-size:20px;font-weight:700">'+grade+'</div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'+
+    '<div class="mc"><div class="mlbl">Gross Profit</div><div class="mval" style="color:#1a7f4b">'+fmt(G.gp)+'</div></div>'+
+    '<div class="mc"><div class="mlbl">Commission</div><div class="mval" style="color:#b45309">'+fmt(G.commissionEarned)+'</div></div>'+
+    '<div class="mc"><div class="mlbl">Deals Closed</div><div class="mval">'+G.deals+'</div></div>'+
+    '<div class="mc"><div class="mlbl">Net Worth</div><div class="mval" style="color:#7c3aed">'+fmt(nw)+'</div></div></div>'+
+    '<div class="brow"><button class="btn-primary" onclick="location.reload()">Play Year 2</button></div>'
+  );
+}
+
+// ─── MODAL ───────────────────────────────────────────────────
+let _mt=null;
+function showModal(title,html){
+  if(_mt){clearTimeout(_mt);_mt=null;}
+  const _wrap=document.getElementById('modal-wrap');
+  const _box=document.getElementById('modal-box');
+  if(!_wrap||!_box) return;
+  // Hard reset overlay style every time to prevent stale positioning
+  _wrap.style.cssText='position:fixed!important;inset:0!important;background:rgba(0,0,0,0.5);'+
+    'backdrop-filter:blur(4px);display:flex!important;align-items:center;justify-content:center;'+
+    'z-index:99999!important;padding:20px;';
+  _box.innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+    '<div style="font-weight:600;font-size:15px">'+title+'</div>'+
+    '<button onclick="closeModal()" style="padding:2px 8px;font-size:11px;border:1px solid #e5e5ea;border-radius:4px;cursor:pointer;background:transparent;color:#6e6e73">✕</button></div>'+html;
+  // wrap already shown via cssText above
+}
+function closeModal(){
+  const _cw=document.getElementById('modal-wrap');
+  if(_cw) _cw.style.display='none';
+  _mt=setTimeout(()=>{document.getElementById('modal-box').innerHTML='';_mt=null;},350);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ─── FEED ────────────────────────────────────────────────────
+function addFeed(text){
+  const feed=document.getElementById('feed');if(!feed)return;
+  if(feed.children.length===1&&feed.firstChild.textContent&&feed.firstChild.textContent.trim()==='')feed.innerHTML='';
+  const div=document.createElement('div');div.className='fitem';
+  div.innerHTML='<span class="fday">Day '+G.day+' · '+dayName(G.day)+'</span>'+text;
+  feed.insertBefore(div,feed.firstChild);
+  while(feed.children.length>25)feed.removeChild(feed.lastChild);
+}
+
+
+// ── SAVE / LOAD SYSTEM ────────────────────────────────────────
+const SAVE_KEY = 'leasing_sim_save_v4';
+
+function showToast(msg, isError){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:20px;right:20px;background:'+(isError?'#d93025':'#1a7f4b')+
+    ';color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;'+
+    'box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:opacity 0.4s;pointer-events:none';
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400);},2500);
+}
+
+function saveGame(){
+  try{
+    const save={G:JSON.parse(JSON.stringify(G)),savedAt:new Date().toISOString(),version:4};
+    localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+    showToast('💾 Game saved — Day '+G.day);
+  }catch(e){showToast('Save failed: '+e.message,true);}
+}
+
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const save=JSON.parse(raw);
+    if(!save.G) return false;
+    Object.assign(G,save.G);
+    return true;
+  }catch(e){console.error('Load failed:',e);return false;}
+}
+
+function clearSave(){
+  localStorage.removeItem(SAVE_KEY);
+  showToast('Save cleared — refresh to restart');
+}
+
+function resumeGame(){
+  if(loadGame()){
+    document.getElementById('intro').style.display='none';
+    document.getElementById('game').style.display='flex';
+    G.isWeekend=isWknd(G.day);
+    // Re-sync TWIC counter
+    if(G.pipe&&G.pipe.length){
+      const maxId=G.pipe.filter(p=>p.id&&String(p.id).startsWith('twic_'))
+        .map(p=>parseInt(String(p.id).replace('twic_',''))||0)
+        .reduce((a,b)=>Math.max(a,b),999);
+      _twicIdCounter=maxId+1;
+    }
+    // Fill any missing knowledge categories
+    if(G.productKnowledge&&typeof PK_DEFAULTS!=='undefined'){
+      Object.entries(PK_DEFAULTS).forEach(([k,v])=>{
+        if(G.productKnowledge[k]===undefined) G.productKnowledge[k]=v;
+      });
+    }
+    updateUI();
+    showToast('✅ Resumed — Day '+G.day+', '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][G.month]);
+  }
+}
+
+// Auto-save on end of day and payday (patched below via override)
+window.addEventListener('DOMContentLoaded',function(){
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw) return;
+  try{
+    const save=JSON.parse(raw);
+    const day=save.G?save.G.day:'?';
+    const month=save.G?['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][save.G.month]:'';
+    const savedAt=new Date(save.savedAt).toLocaleString();
+    const banner=document.createElement('div');
+    banner.id='resume-banner';
+    banner.style.cssText='background:#f0faf4;border:1px solid #86d8a8;border-radius:10px;padding:12px 16px;max-width:500px;width:100%;text-align:left;margin-bottom:12px';
+    banner.innerHTML='<div style="font-size:12px;font-weight:600;color:#1a7f4b;margin-bottom:4px">💾 Saved game — Day '+day+', '+month+'</div>'+
+      '<div style="font-size:11px;color:#6e6e73;margin-bottom:8px">Saved '+savedAt+'</div>'+
+      '<div style="display:flex;gap:8px">'+
+      '<button onclick="resumeGame()" style="background:#1a7f4b;color:#fff;border:none;border-radius:7px;padding:8px 16px;cursor:pointer;font-weight:600;font-family:inherit;font-size:12px">Resume Game</button>'+
+      '<button onclick="clearSave();document.getElementById(\'resume-banner\').remove()" style="background:transparent;border:1px solid #c7c7cc;border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px">Start Fresh</button>'+
+      '</div>';
+    const intro=document.getElementById('intro');
+    if(intro){
+      const btn=intro.querySelector('button');
+      if(btn&&btn.parentNode) btn.parentNode.insertBefore(banner,btn.parentNode.firstChild);
+      else intro.prepend(banner);
+    }
+  }catch(e){}
+});
+
+// ── CPA RESPONSE HANDLER ─────────────────────────────────────
+function cpaResponse(response){
+  const q=G._cpaQ; const p=G.pipe?G.pipe.find(x=>x.id===G._cpaP):null;
+  if(!p||!q){closeModal();return;}
+  const area=q?q.area:'trac';
+  closeModal();
+  if(response==='answer'){
+    if(p.trust>=4&&Math.random()<0.5){
+      p.trust=clamp(p.trust+1);
+      if(typeof advanceStage==='function') advanceStage(p,'negotiation','Confidence play on CPA question — worked');
+      p.history=p.history||[]; p.history.push({day:G.day,event:'Confidence play on CPA — worked'});
+      engageResult(p,'Confidence Play — It Worked',
+        'Your confidence and relationship carried it despite the knowledge gap.',
+        'Study '+area+' before the next CPA conversation.','Trust buys forgiveness for imperfect answers.');
+    } else {
+      p.trust=clamp(p.trust-2); p.dealHealth=clamp((p.dealHealth||100)-15);
+      p.history=p.history||[]; p.history.push({day:G.day,event:'CPA answer — credibility damage'});
+      engageResult(p,'Credibility Damage','Answer was not clean. CPA flagged it. Owner now hesitant.',
+        'Trust -2. Study '+area+' before next CPA call.',
+        'When in doubt, defer. Getting it in writing is always professional.');
+    }
+  } else if(response==='defer'){
+    p.trust=clamp(p.trust+0.5);
+    p.history=p.history||[]; p.history.push({day:G.day,event:'Deferred to internal finance team'});
+    engageResult(p,'Deferred — Internal Finance Team',
+      '"Let me loop in our finance team and get you a detailed answer today." CPA respected it.',
+      'Send the written answer within 24 hours.','Deferring to your team is what experienced reps do.');
+  } else if(response==='followup'){
+    p.locked=true; p.lockedReason='3-way CPA call with manager scheduled';
+    p.lockedUntil=G.day+rnd(2,4);
+    p.history=p.history||[]; p.history.push({day:G.day,event:'3-way CPA call with manager scheduled'});
+    engageResult(p,'3-Way Call Scheduled','Manager and CPA call in '+rnd(2,4)+' days.',
+      'Prepare thoroughly before that call.',
+      'Your manager handling the technical questions often closes deals you would have lost alone.');
+  } else {
+    p.history=p.history||[]; p.history.push({day:G.day,event:'Written clarification — '+area});
+    engageResult(p,'Written Clarification Sending',
+      'Committed to a written explanation by end of day. CPA: "If it addresses my concerns, we can move forward."',
+      'Study '+area+' and send a clean written answer.','Written answers let CPAs think at their own pace.');
+  }
+  if(typeof addFeed==='function') addFeed(p.name+': CPA response — '+response);
+  if(typeof updateUI==='function') updateUI();
+  // Auto-save after significant action
+  if(typeof saveGame==='function') setTimeout(saveGame, 200);
+}
+
+// ── SEND REVISED PROPOSAL ─────────────────────────────────────
+function handleSendRevised(p){
+  if(!p.proposalBuilt){
+    showModal('No Proposal Yet','<div class="rb rb-n">Build a proposal first before revising it.</div>'+
+      '<div class="brow"><button class="btn-primary" onclick="closeModal()">OK</button></div>');
+    return;
+  }
+  const tweaks=[
+    'Adjusted term from 36 to 48 months — lower monthly payment.',
+    'Restructured mileage cap to better fit their routes.',
+    'Separated upfit financing to clean up the base payment.',
+    'Reduced vehicle count to 3 units first with option for additional.',
+    'Added fleet manager early-exit protection clause.',
+  ];
+  const tweak=pick(tweaks);
+  p.trust=clamp(p.trust+0.5);
+  p.note='Revised proposal: '+tweak.substring(0,40);
+  p.history=p.history||[]; p.history.push({day:G.day,event:'Revised proposal: '+tweak});
+  p.nextFollowUp=G.day+rnd(1,3);
+  addFeed(p.name+': revised proposal sent');
+  engageResult(p,'Revised Proposal Sent',tweak,'Follow up in 48 hours.',
+    'Revising quickly signals professionalism. Slow revisions lose deals.');
+}
+
+// ── AUTO-SAVE WRAPPERS ────────────────────────────────────────
+(function(){
+  const _oed=endDay;
+  endDay=function(){ _oed(); setTimeout(()=>{if(typeof saveGame==='function')saveGame();},600); };
+  const _otp=triggerPayday;
+  triggerPayday=function(){ _otp(); setTimeout(()=>{if(typeof saveGame==='function')saveGame();},600); };
+})();
+
+</script>
+</body>
+</html>
