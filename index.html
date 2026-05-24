@@ -2825,7 +2825,24 @@ function endDay(){
     G.month=((G.month||0)+1)%12; G.mgp=0; G.mdeals=0;
     if(G.monthly.length>=12){showGameOver();return;}
   }
-  if(G.day>=G.nextPayday){setTimeout(()=>{closeModal();triggerPayday();},300);return;}
+  if(G.day>=G.nextPayday){
+    // Use longer delay and skip closeModal — showModal() in triggerPayday
+    // overwrites the modal directly, avoiding the close→open flicker
+    // that corrupts the overlay CSS state on Day 15
+    setTimeout(()=>{
+      // Hard-reset modal wrap state before showing payday
+      const wrap=document.getElementById('modal-wrap');
+      if(wrap){
+        wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);'+
+          'backdrop-filter:blur(4px);display:none;align-items:center;'+
+          'justify-content:center;z-index:99999;padding:20px;';
+      }
+      const box=document.getElementById('modal-box');
+      if(box) box.innerHTML='';
+      triggerPayday();
+    },500);
+    return;
+  }
 
   // Refresh context
   const ctxEl=document.getElementById('ctx-text');
